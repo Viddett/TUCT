@@ -18,7 +18,7 @@ def connect_to_wifi(wlan):
     # fuk powe save
     wlan.config(pm = 0xa11140)
 
-    wlan.connect(wifi_creds_template.wifi_ssid, wifi_creds_template.wifi_pswd)
+    wlan.connect(wifi_creds.wifi_ssid, wifi_creds.wifi_pswd)
 
     while not wlan.isconnected() and wlan.status() >= 0:
         print("Waiting to connect:")
