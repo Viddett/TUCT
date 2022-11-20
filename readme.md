@@ -36,3 +36,30 @@ wlan.connect(wifi_creds.wifi_ssid, wifi_creds.wifi_pswd)
 ```
 **DO NOT COMMIT THE `wifi_creds.py` FILE!**
 
+## Lightshow format
+
+The tree can run a *light-show* that is defined as 
+
+```json
+// T = Nr of time steps
+// N = Nr of leds
+light_show_obj = {
+    time:float[T],
+    leds:led_tuple[N,T]
+}
+
+led_tuple = (
+    intensity:int,
+    red:int,
+    green:int,
+    blue:int
+)
+```
+
+TODOS
+
+- [ ] Parse csv's into lightshow json-obj
+- [ ] FIgure out how to send json-obj to PICO
+- [ ] Execute lightshow json-objs on PICO
+- [ ] Cool software to design lightshow
+
