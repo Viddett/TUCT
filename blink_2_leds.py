@@ -1,10 +1,11 @@
+import time, _thread, machine
 from machine import Pin
-import time
+from smol_webserver import startNet
 
 
 data_pin = Pin(0,Pin.OUT)
 clock_pin = Pin(1,Pin.OUT)
-
+num_leds = 24
 
 
 """
@@ -50,9 +51,7 @@ def clock_out_bytev2(byte:int):
         b = byte & (1<<i)
 
         data_pin.value(b)
-        time.sleep_us(100)
         clock_pin.on()
-        time.sleep_us(100)
         clock_pin.off()
 
 
@@ -73,7 +72,7 @@ def set_leds(r,g,b):
     clock_out_bytev2(0)
     clock_out_bytev2(0)
 
-    for i in range(12):
+    for i in range(num_leds):
 
         clock_out_bytev2(int('11100011',2))
         clock_out_bytev2(b)
@@ -90,18 +89,29 @@ def set_leds(r,g,b):
 #"""
 
 
-while True:
-    print("writiti")
-    set_leds(200,0,0)
-    set_leds(200,0,0)
-    set_leds(200,0,0)
+def ledThread():
+    print("started blink")
     time.sleep(1)
-    set_leds(200,200,0)
-    set_leds(200,200,0)
-    set_leds(200,200,0)
-    time.sleep(1)
+    while True:
+        set_leds(100,0,0)
+        set_leds(100,0,0)
+        set_leds(100,0,0)
+        time.sleep(0.2)
+        set_leds(200,0,0)
+        set_leds(200,0,0)
+        set_leds(200,0,0)
+        time.sleep(0.2)
+        set_leds(100,0,0)
+        set_leds(100,0,0)
+        set_leds(100,0,0)
+        time.sleep(0.2)
+        set_leds(200,0,0)
+        set_leds(200,0,0)
+        set_leds(200,0,0)
+        time.sleep(1)
 
 #"""
+
 
 """
 while True:
@@ -111,3 +121,6 @@ while True:
     time.sleep(0.5)
     print("debugigigbiigig")
 """
+
+_thread.start_new_thread(ledThread, ())
+startNet()
