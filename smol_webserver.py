@@ -1,7 +1,7 @@
 from machine import Pin
-import network
-import time
+import time, network, _thread
 import wifi_creds
+
 
 try:
   import usocket as socket
@@ -10,6 +10,7 @@ except:
 
 
 led = Pin("LED", Pin.OUT)
+_ledStatus = False
 
 
 def connect_to_wifi(wlan):
@@ -25,6 +26,21 @@ def connect_to_wifi(wlan):
 
     print(wlan.ifconfig())
 
+
+def getLedStatus():
+  global _ledStatus
+  lock = _thread.allocate_lock()
+  with lock:
+    return _ledStatus
+
+
+def setLedStatus(status):
+  print('LED', status)
+  global _ledStatus
+  lock = _thread.allocate_lock()
+  with lock:
+    _ledStatus = status
+    led.value(status)
 
 
 def startNet():
@@ -45,11 +61,9 @@ def startNet():
     led_on = request.find('/?led=on')
     led_off = request.find('/?led=off')
     if led_on == 6:
-      print('LED ON')
-      led.value(1)
+      setLedStatus(True)
     if led_off == 6:
-      print('LED OFF')
-      led.value(0)
+      setLedStatus(False)
     response = "Gött med kebab"
     conn.send('HTTP/1.1 200 OK\n')
     conn.send('Content-Type: text/html\n')

@@ -1,6 +1,6 @@
 import time, _thread, machine
 from machine import Pin
-from smol_webserver import startNet
+from smol_webserver import startNet, getLedStatus
 
 
 data_pin = Pin(0,Pin.OUT)
@@ -93,22 +93,21 @@ def ledThread():
     print("started blink")
     time.sleep(1)
     while True:
-        set_leds(100,0,0)
-        set_leds(100,0,0)
-        set_leds(100,0,0)
-        time.sleep(0.2)
-        set_leds(200,0,0)
-        set_leds(200,0,0)
-        set_leds(200,0,0)
-        time.sleep(0.2)
-        set_leds(100,0,0)
-        set_leds(100,0,0)
-        set_leds(100,0,0)
-        time.sleep(0.2)
-        set_leds(200,0,0)
-        set_leds(200,0,0)
-        set_leds(200,0,0)
-        time.sleep(1)
+        r = 0
+        g = 0
+        if (getLedStatus()):
+            g = 100
+        else:
+            r = 100
+    
+        set_leds(r,g,0)
+        set_leds(r,g,0)
+        set_leds(r,g,0)
+        time.sleep(0.3)
+        set_leds(2*r,2*g,0)
+        set_leds(2*r,2*g,0)
+        set_leds(2*r,2*g,0)
+        time.sleep(0.3)
 
 #"""
 
