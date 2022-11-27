@@ -1,10 +1,14 @@
 import time, _thread, machine
 from machine import Pin
-from smol_webserver import startNet, getLedStatus
+#from smol_webserver import startNet, getLedStatus
 
 
 data_pin = Pin(0,Pin.OUT)
 clock_pin = Pin(1,Pin.OUT)
+
+red_pin = Pin(3,Pin.OUT)
+#clock_pin = Pin(5,Pin.OUT)
+
 num_leds = 24
 
 
@@ -41,22 +45,26 @@ def clock_out_byte(val):
 
 def clock_out_bytev2(byte:int):
     
+    T = 100
+
     clock_pin.off()
-    data_pin.off()
+    #data_pin.off()
+    #time.sleep_ms(3)
 
-    time.sleep_us(100)
-
+    
     for i in range(8):
 
-        b = byte & (1<<i)
-
-        data_pin.value(b)
+        #b = byte & (1<<i)
+        b = byte & (1<<(7-i))
+        data_pin.value(b!=0)
+        time.sleep_us(T)
         clock_pin.on()
+        time.sleep_us(T)
         clock_pin.off()
 
 
     clock_pin.off()
-    data_pin.off()
+    #data_pin.off()
 
 def intens_bytes(intens):
 
@@ -71,10 +79,11 @@ def set_leds(r,g,b):
     clock_out_bytev2(0)
     clock_out_bytev2(0)
     clock_out_bytev2(0)
+    #clock_out_bytev2(0)
 
-    for i in range(num_leds):
+    for i in range(12):
 
-        clock_out_bytev2(int('11100011',2))
+        clock_out_bytev2(int('11100001',2))
         clock_out_bytev2(b)
         clock_out_bytev2(g)
         clock_out_bytev2(r)
@@ -121,5 +130,22 @@ while True:
     print("debugigigbiigig")
 """
 
-_thread.start_new_thread(ledThread, ())
-startNet()
+#_thread.start_new_thread(ledThread, ())
+#startNet()
+
+
+while True:
+    print("hh")
+    time.sleep(0.5)
+    red_pin.value(1)
+    for i in range(1):
+        set_leds(250,0,0)
+    time.sleep(0.5)
+    red_pin.value(0)
+    for i in range(1):
+        set_leds(100,100,100)
+    #for i in range(1000):
+    #    set_leds(2,200,0)
+    #    time.sleep_ms(1)
+
+
