@@ -7,8 +7,6 @@ except:
     import socket
 
 
-
-
 def connect_wifi(timeout_s:int):
 
     wlan = network.WLAN(network.STA_IF) #initialize the wlan object
@@ -44,7 +42,6 @@ def server_loop(s):
     with open('index.html',encoding='utf-8') as f:
         response = f.read()
     response = response.encode()
-    print(response)
 
     while True:
         conn, addr = s.accept()
