@@ -1,4 +1,4 @@
-# TUCT 2k22
+# Micropython TUCT 2k22
 *The Ultimate Cristmas Tree*
 
 Currently using micro-python, check here for some refs: 
