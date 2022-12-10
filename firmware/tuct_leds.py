@@ -1,6 +1,7 @@
 
 from machine import Pin
 import time
+import _thread
 
 class LedState:
 
@@ -80,24 +81,69 @@ class Tuct:
         self.clock_out_bytev2(0xff)
 
 
+
+def test_leds1():
+    tree = Tuct(12,1,0)
+
+    intes = 1
+    while True:
+        intes += 1
+
+        if intes > 15:
+            intes = 0
+        for i in range(12):
+
+            tree.set_all_leds(0,0,0,0)
+
+            tree.leds[i].set_intens(intes)
+            tree.leds[i].set_rgb(100,10,0)
+            tree.update_tree()
+            time.sleep_ms(10)
+
         
+def christmas1(tree:Tuct):
+
+    intens = 1
+
+    odd_leds = [1,3,4,6,9,10]
+
+    step = 0
+
+    odd_colors = [(100,0,0),(0,100,0)]
+    even_colors = [(0,100,0),(100,0,0)]
     
-tree = Tuct(12,1,0)
+    tree.set_all_leds(0,0,0,intens)
 
-intes = 1
-while True:
-    intes += 1
+    while True:
+        if step >= len(odd_colors):
+            step = 0
 
-    if intes > 15:
-        intes = 0
-    for i in range(12):
+        for i,led in enumerate(tree.leds):
+            if i in odd_leds:
+                r,g,b = odd_colors[step]
+                led.set_rgb(r,g,b)
+            else:
+                r,g,b = even_colors[step]
+                led.set_rgb(r,g,b)
 
-        tree.set_all_leds(0,0,0,0)
-
-        tree.leds[i].set_intens(intes)
-        tree.leds[i].set_rgb(100,10,0)
         tree.update_tree()
-        time.sleep_ms(10)
-        
+        time.sleep_ms(1000)
 
+        step += 1
+            
+
+def main():
+    # Test led thread
+    print("eeyo")
+    tree = Tuct(12,1,0)
+    args = [tree]
+    #args = (tree)
+    _thread.start_new_thread(christmas1,args)
+    while True:
+        time.sleep(1)
+        print("wazup")
+
+
+if __name__ == '__main__':
+    main()
 
