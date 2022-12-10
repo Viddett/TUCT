@@ -1,0 +1,70 @@
+﻿@page "/lightshow"
+
+@using BlazorApp1.Data
+@using BlazorApp1.Shared
+
+
+<h3>lightshow</h3>
+
+
+@code {
+
+    int nr_leds = 12;
+    int nr_steps = 5;
+
+    int led_index;
+
+    LED[,] leds;
+    bool leds_initated;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Create empty led-matrix
+        leds = new LED[nr_leds, nr_steps];
+        for(int L = 0; L < nr_leds; L++)
+        {
+            for(int step = 0; step < nr_steps; step++)
+            {
+                leds[L, step] = new LED();
+            }
+        }
+        leds_initated = true;
+
+        // Go print
+        System.Diagnostics.Debug.Print("trocaderomust e gött");
+       
+    }
+}
+
+
+ <table class="table">
+
+     @for(int row_index=0;row_index<=nr_leds;row_index++){
+         <tr>
+         @if(row_index==0){
+             // Top header
+             <th></th>
+             @for(int step=0;step<nr_steps;step++){
+                 <th>Step @step</th>
+             }
+
+         }else{
+             // Each LED-row
+            <th>LED @row_index</th>
+            @for(int step=0;step<nr_steps;step++){
+                    <td>
+                        @if (leds_initated)
+                        {
+                            <LedButton led="@leds[row_index-1, step]" />
+                        }
+                 </td>
+             }
+         }
+         </tr>       
+     }
+   </table>
+
+
+
+
