@@ -1,4 +1,7 @@
 ﻿@using Data
+@using BlazorColorPicker
+@using System.Drawing;
+
 
 
 @code {
@@ -7,32 +10,39 @@
     public LED led { get; set; }
 
     private String bgcolor = "#00ff";
-    private bool edit_mode;
+
+
+    private bool isOpened = false;
+    private string color = "#F1F7E9";
+    private string button_text = "";
 
 
     void onClickFunc()
     {
-        if (edit_mode)
-        {
-            bgcolor = "#00ff";
-        }
-        else
-        {
-            bgcolor = "#0aaa";
-        }
 
-        edit_mode = !edit_mode;
+        isOpened = true;
 
+    }
+
+    void ClosedEvent(string value)
+    {
+        color = value;
+        isOpened = false;
+        bgcolor = color;
+
+        set_led_color(color);
+    }
+
+    void set_led_color(string hex_color)
+    {
+        Color color = ColorTranslator.FromHtml(hex_color);
+        led.set_rgb(color.R, color.G, color.B);
+        led.set_intens(color.A);
     }
 
 }
 
-@if (edit_mode)
-{
-    <button class="btn btn-primary" style="background-color:@bgcolor" @onclick=onClickFunc>Click</button>
-}
-else
-{
-    <button class="btn btn-primary" style="background-color:@bgcolor" @onclick=onClickFunc>Click</button>
-}
 
+<ColorPicker Title="My Blazor ColorPicker" IsOpened="isOpened" Closed="ClosedEvent" MyColor="@color">
+</ColorPicker>
+<button class="btn btn-primary" style="background-color:@bgcolor; padding:25px" @onclick=onClickFunc>@button_text</button>

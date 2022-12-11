@@ -6,6 +6,9 @@
 
 <h3>lightshow</h3>
 
+<button class="btn btn-primary" @onclick=btn_open_lightshow>Open lightshow</button>
+<button class="btn btn-primary" @onclick=btn_save_lightshow>Save lightshow</button>
+<button class="btn btn-primary" @onclick=btn_send_tree_lightshow>Download to tree</button>
 
 @code {
 
@@ -33,8 +36,28 @@
 
         // Go print
         System.Diagnostics.Debug.Print("trocaderomust e gött");
-       
+
     }
+
+    void btn_save_lightshow()
+    {
+        // Save the current lightshow as json
+
+    }
+
+    void btn_open_lightshow()
+    {
+        // Upload json file of a lightshow
+
+    }
+
+    void btn_send_tree_lightshow()
+    {
+        // Send lightshow to tree
+        //TODO
+    }
+
+
 }
 
 

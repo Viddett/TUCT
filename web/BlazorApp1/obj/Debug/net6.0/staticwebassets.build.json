@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "xxICRk7trt1uxpCL2Hj1N4rtCvKkJvKmfy7Bk6ZUuso=",
+  "Hash": "+w9I0w0fFyqTV3Px3V/9ycP4tCatcTd/Rzzq1Bh1rgo=",
   "Source": "BlazorApp1",
   "BasePath": "_content/BlazorApp1",
   "Mode": "Default",
@@ -16,6 +16,40 @@
     }
   ],
   "Assets": [
+    {
+      "Identity": "C:\\Users\\elias\\.nuget\\packages\\blazorcolorpicker\\2.2.0\\staticwebassets\\BlazorColorPicker.bundle.scp.css",
+      "SourceId": "BlazorColorPicker",
+      "SourceType": "Package",
+      "ContentRoot": "C:\\Users\\elias\\.nuget\\packages\\blazorcolorpicker\\2.2.0\\staticwebassets\\",
+      "BasePath": "_content/BlazorColorPicker",
+      "RelativePath": "BlazorColorPicker.bundle.scp.css",
+      "AssetKind": "All",
+      "AssetMode": "Reference",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "ScopedCss",
+      "AssetTraitValue": "ProjectBundle",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\elias\\.nuget\\packages\\blazorcolorpicker\\2.2.0\\staticwebassets\\BlazorColorPicker.bundle.scp.css"
+    },
+    {
+      "Identity": "C:\\Users\\elias\\.nuget\\packages\\blazorcolorpicker\\2.2.0\\staticwebassets\\colorpicker.css",
+      "SourceId": "BlazorColorPicker",
+      "SourceType": "Package",
+      "ContentRoot": "C:\\Users\\elias\\.nuget\\packages\\blazorcolorpicker\\2.2.0\\staticwebassets\\",
+      "BasePath": "_content/BlazorColorPicker",
+      "RelativePath": "colorpicker.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Always",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\elias\\.nuget\\packages\\blazorcolorpicker\\2.2.0\\staticwebassets\\colorpicker.css"
+    },
     {
       "Identity": "C:\\Users\\elias\\source\\repos\\BlazorApp1\\BlazorApp1\\obj\\Debug\\net6.0\\scopedcss\\bundle\\BlazorApp1.styles.css",
       "SourceId": "BlazorApp1",

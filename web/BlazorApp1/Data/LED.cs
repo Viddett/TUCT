@@ -11,6 +11,8 @@
         private int banan;
 
         public int red { get { return this._red; } }
+        public int green { get { return this._green; } }
+        public int blue { get { return this._blue; } }
 
         public void set_rgb(int red, int green, int blue) {
             int rgb_max = 255;
