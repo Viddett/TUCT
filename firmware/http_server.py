@@ -45,7 +45,7 @@ class HttpServer:
         self.socket.bind(('', port))
         self.socket.listen(backlog)
         self.stop_webserver = False
-        _thread.start_new_thread(self._server_thread,())
+        #_thread.start_new_thread(self._server_thread,())
 
     def _server_thread(self):
         while not self._stop_flag:
@@ -124,12 +124,14 @@ if __name__ == '__main__':
     server = HttpServer(get_callback,post_callback)
     server.start_server()
 
+    server._server_thread()
+
     #while True:
     #    time.sleep_ms(200)
-    print("eeee")
-    time.sleep(35)
-    print("bytbey")
-    server.stop_server()
+    #print("eeee")
+    #time.sleep(35)
+    #print("bytbey")
+    #server.stop_server()
 
-    time.sleep(2)
+    #time.sleep(2)
 
