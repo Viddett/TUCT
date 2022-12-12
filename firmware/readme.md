@@ -71,5 +71,23 @@ def main():
     server.start_server()
 ```
 
+Example of how to make a POST request from javascript
 
+```javascript
+function send_post_pico(){
+	
+	fetch('http://192.168.1.92/', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ "id": 78912 })
+})
+.then(response => response.json())
+.then(response => console.log(JSON.stringify(response)))
+	
+	
+}
+```
 
