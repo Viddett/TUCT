@@ -1,12 +1,13 @@
 
-import _thread,time,network
+import time,network
 import wifi_creds
+import json
+import index
 
 try:
     import usocket as socket
 except:
     import socket
-
 
 
 def connect_wifi(timeout_s:int=9):
@@ -33,10 +34,12 @@ def connect_wifi(timeout_s:int=9):
 
 class HttpServer:
 
-    def __init__(self, get_callback, post_callback):
-        self._get_callback = get_callback
+    def __init__(self, get_state_callback, post_callback):
+        self._get_callback = get_state_callback
         self._post_callback = post_callback
         self._stop_flag = False
+
+        self._html_response = index.html
 
 
     def start_server(self,backlog:int=5,port:int=80):
@@ -50,17 +53,15 @@ class HttpServer:
     def _server_thread(self):
         while not self._stop_flag:
 
-            #conn, addr = self.socket.accept()
-            #"""
             try:
-                print("wait accept new conn")
+                # self.socket.settimeout(1.5) determines the timeout here
                 conn, addr = self.socket.accept()
             except OSError as e:
                 if e.errno == 110:
                     continue
                 else:
                     raise e
-            #"""
+
             print('Got a connection from %s' % str(addr))
             self._handle_conn(conn,addr)
 
@@ -75,44 +76,109 @@ class HttpServer:
 
     def _handle_conn(self,conn, addr):
         request = conn.recv(2024)
-        #request2 = conn.recv(1024)
         request = request.decode("utf-8") 
+        #print(request)
         
-        self._send_response_http(conn)
-        conn.close()
-
         request_lines = request.split('\n')
 
-        method = request_lines[0].split('/')[0].replace(' ','')
+        method = request_lines[0].split(' ')[0]
+        url = request_lines[0].split(' ')[1].strip()
         args = dict()
 
         for line in request_lines[1:]:
             line = line.strip()
             if ':' in line:
                 parts = line.split(':')
-
                 args[parts[0]] = parts[1]
-        print(method)
-        print(args)
 
+        if method == 'OPTIONS':
+            self._send_cors_stuff(conn)
+            
+        elif method == 'GET':
+            self._send_cors_stuff(conn)
+            self._handle_get(conn,url,args,request)
 
+        elif method == 'POST':
 
+            self._send_cors_stuff(conn)
+            self._handle_post(conn,url,args,request)
 
-    def _send_response_http(self,conn,args=dict()):
+        else:
+
+            self._send_bad_req(conn)
+
+        conn.close()
+
+    def _send_bad_req(self,conn):
+            conn.send('HTTP/1.1 400 Bad request\n')
+            conn.send('Content-Type: text/html\n')
+            conn.send('Connection: close\n')
+            conn.sendall('\n')
+
+    def _send_cors_stuff(self,conn):
+        resp_stuff = [
+            "Access-Control-Allow-Origin: *",
+            "Access-Control-Allow-Credentials : true",
+            "Access-Control-Allow-Methods : GET,HEAD,OPTIONS,POST,PUT",
+            "Access-Control-Allow-Headers:Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"
+            ]
 
         conn.send('HTTP/1.1 200 OK\n')
-        conn.send('Content-Type: text/html\n')
-        conn.send('Connection: close\n')
-        for arg in args:
-            conn.sendall(arg + ':' + str(args[arg]) + '\n')
-        conn.sendall('\n')
+
+        for r in resp_stuff:
+            conn.sendall(r + '\n')
 
 
-def get_callback(args):
+    def _handle_get(self,conn,url,args,request):
+
+        if url == '/':
+            # Default landing page
+            conn.send('Content-Type: text/html\n')
+            conn.send('Connection: close\n\n')
+            conn.send(self._html_response)
+            
+        elif url == '/state':
+            # return tree state as json
+            #print("get state")
+            state = self._get_callback()
+            state_json = json.dumps(state)
+            conn.send('Content-Type: application/json\n\n')
+            conn.send(state_json + '\n')
+        else:
+            # Bad request
+            self._send_bad_req(conn)
+
+    def _handle_post(self,conn,url,args,request):
+        #print("post set stuff")
+        conn.send('Content-Type: application/json\n\n')
+        conn.send('{"gott":"gott_me_kebab"}')
+        
+        req_lines = request.split('\n')
+        #print(req_lines)
+        body = ""
+        body_sep = '\r\n\r\n'
+        if body_sep in request:
+            body = request.split(body_sep)[1]
+      
+        if len(body)>0:
+            print("Body")
+            print(body)
+
+        try:
+            obj = json.loads(body)
+            self._post_callback(obj)
+        except:
+            print("failed to parse josbn!")
+
+
+def get_callback():
     print("GET CALLBACK")
+
+    return {"kebab_lvl":13337, "svarv_lvlv":10009009420, "rgb":"fett"}
 
 def post_callback(args):
     print("POST CALLBACK")
+    print(args)
 
 
 
@@ -123,15 +189,5 @@ if __name__ == '__main__':
     print("starting server")
     server = HttpServer(get_callback,post_callback)
     server.start_server()
-
     server._server_thread()
-
-    #while True:
-    #    time.sleep_ms(200)
-    #print("eeee")
-    #time.sleep(35)
-    #print("bytbey")
-    #server.stop_server()
-
-    #time.sleep(2)
 
