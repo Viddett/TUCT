@@ -42,9 +42,34 @@ wlan.connect(wifi_creds.wifi_ssid, wifi_creds.wifi_pswd)
 `testPico.py` - Test script to test if pico is alive
 `tuct_leds.py` - LEDlibrary to set colors of the leds, this can be run to test the leeds on the tree as well.
 
+## API Endpoints
+
+The `http_server.py` implements 3 http endpoints 
+
+`GET /` - Root, returns the html defined in `index.py`
+
+`GET /state` - Returns a json object containing the state of the tree.
+Needs to be implemented by the user, see example below.
+
+`POST /` - Sends a json object to the tree. Can be defined by the user what this object can contain.
 
 
-## HTTP Server
+
+```python
+import http_server
+
+def get_state_callbck():
+    # Function that returns the tree state as a dict
+    return  {"kebab_lvl":13337, "svarv_lvlv":10009009420, "rgb":"fett"}
+
+def set_state_callbck(json_obj:dict()):
+    # Function that get called when a json object is sent to the tree.
+
+def main():
+    http_server.connect_wifi()
+    server = http_server.HttpServer(get_state_callbck,set_state_callbck)
+    server.start_server()
+```
 
 
 
