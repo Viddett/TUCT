@@ -1,5 +1,4 @@
-# Micropython TUCT 2k22
-*The Ultimate Cristmas Tree*
+# Micropython firmware for TUCT 2k22
 
 Currently using micro-python, check here for some refs: 
 * https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-python-sdk.pdf
@@ -35,5 +34,17 @@ import wifi_creds
 wlan.connect(wifi_creds.wifi_ssid, wifi_creds.wifi_pswd)
 ```
 **DO NOT COMMIT THE `wifi_creds.py` FILE!**
+
+## File structure
+`http_server.py` - Implements a http-server with api-endpoints for reading and writing to the tree.
+`index.py` - Container for the HMTL when someone makes get request with a browser to the tree.
+`smol_webserver.py` - Old, to be removed
+`testPico.py` - Test script to test if pico is alive
+`tuct_leds.py` - LEDlibrary to set colors of the leds, this can be run to test the leeds on the tree as well.
+
+
+
+## HTTP Server
+
 
 
