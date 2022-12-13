@@ -11,6 +11,7 @@
 <button class="btn btn-primary" @onclick=btn_open_lightshow>Open lightshow</button>
 <button class="btn btn-primary" @onclick=btn_save_lightshow>Save lightshow</button>
 <button class="btn btn-primary" @onclick=btn_send_tree_lightshow>Download to tree</button>
+<button class="btn btn-primary" @onclick=btn_upload_tree_lightshow>Upload from tree</button>
 
 @code {
 
@@ -41,25 +42,38 @@
 
     }
 
-    void btn_save_lightshow()
+
+    private async Task btn_upload_tree_lightshow()
     {
         // Save the current lightshow as json
-        JS.InvokeVoidAsync("glenn_test","gött arg");
+        //JS.InvokeVoidAsync("glenn_test","gött arg");
+
+        string state;
+        state = new(await JS.InvokeAsync<string>("get_tree_status", "127.0.0.1:5000"));
+        System.Diagnostics.Debug.Print("TREE STATE");
+
+        System.Diagnostics.Debug.Print(state);
+
+
     }
 
-    void btn_open_lightshow()
+    private async Task btn_open_lightshow()
     {
         // Upload json file of a lightshow
 
     }
 
-    void btn_send_tree_lightshow()
+    private async Task btn_send_tree_lightshow()
     {
         // Send lightshow to tree
         //TODO
     }
 
 
+    private async Task btn_save_lightshow()
+    {
+        
+    }
 }
 
 
