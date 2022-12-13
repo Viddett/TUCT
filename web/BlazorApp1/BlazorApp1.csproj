@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\tree_comms.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BlazorColorPicker" Version="2.2.0" />
   </ItemGroup>
 

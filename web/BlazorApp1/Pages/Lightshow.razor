@@ -4,6 +4,8 @@
 @using BlazorApp1.Shared
 
 
+@inject IJSRuntime JS
+
 <h3>lightshow</h3>
 
 <button class="btn btn-primary" @onclick=btn_open_lightshow>Open lightshow</button>
@@ -42,7 +44,7 @@
     void btn_save_lightshow()
     {
         // Save the current lightshow as json
-
+        JS.InvokeVoidAsync("glenn_test","gött arg");
     }
 
     void btn_open_lightshow()
