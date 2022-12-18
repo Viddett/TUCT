@@ -47,9 +47,9 @@
     {
         // Save the current lightshow as json
         //JS.InvokeVoidAsync("glenn_test","gött arg");
+        System.Diagnostics.Debug.Print("uplaod btn");
 
-        string state;
-        state = new(await JS.InvokeAsync<string>("get_tree_status", "127.0.0.1:5000"));
+        var state = await JS.InvokeAsync<string>("get_tree_status", "127.0.0.1:5000");
         System.Diagnostics.Debug.Print("TREE STATE");
 
         System.Diagnostics.Debug.Print(state);
@@ -60,6 +60,10 @@
     private async Task btn_open_lightshow()
     {
         // Upload json file of a lightshow
+        System.Diagnostics.Debug.Print("open btn");
+        var interopResult = await JS.InvokeAsync<string>("displayTickerAlert2", "hh", 123);
+        System.Diagnostics.Debug.Print("after");
+        System.Diagnostics.Debug.Print(interopResult);
 
     }
 

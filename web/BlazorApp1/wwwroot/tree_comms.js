@@ -6,25 +6,18 @@ function glenn_test(arg) {
     console.log(arg)
 }
 
-
-
-async function get_tree_status(ip_adress) {
+function get_tree_status(ip_adress) {
     console.log("GET TREE STATUS")
-    var response = await fetch('http://' + ip_adress +'/state', {
+
+    return fetch('http://' + ip_adress + '/state', {
         method: 'GET',
         headers: {
             'Accept': 'application/json'
-        }//,
-        //body: JSON.stringify({ "id": 78912 })
-    })
-        .then(response => response.json())
-        //.then(response => console.log(JSON.stringify(response)))
-    //response_json = response.json()
-    //console.log(response_json)
-    return response
-    //yield response
-
+        }
+    }).then(response => response.json())
+        .then(response => JSON.stringify(response) )
 }
+
 
 function set_tree_status(ip_adress, obj) {
 
