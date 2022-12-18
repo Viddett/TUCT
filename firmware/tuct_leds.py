@@ -196,10 +196,144 @@ def christmas2(tree:Tuct):
         tree.update_tree()
         time.sleep_ms(10)
 
+def light_show_dict_valid(nr_leds,ls:dict):
+
+
+    ls_valid = True
+
+    nr_time_steps = len(ls['time'])
+    nr_leds_in_ls = len(ls['leds'])
+
+    ls_valid &= nr_leds == nr_leds_in_ls
+
+    for i in range(len(ls['leds'])):
+
+        if not ls_valid:
+            break
+
+        led_i = ls['leds'][i]
+        ls_valid &= len(led_i) == nr_time_steps
+
+    return ls_valid
+
+
+def interp_leds(t, time_vec, leds:list):
+    # Interpolates the color for a single led
+    
+    assert abs(time_vec[0]) < 0.0001 # Time vec must start at 0
+
+    t0 = 0
+    t1 = time_vec[1]
+
+    ind0 = 0
+
+    for i in range(0,len(time_vec)-1):
+
+        if t > time_vec[i]:
+            ind0 = i
+            t0 = time_vec[i]
+            t1 = time_vec[i+1]
+
+    t_delta = t1 - t0 
+    k1 = (t - t0)/t_delta
+    
+    if k1 > 1:
+        k1 = 1
+
+    k0 = 1-k1 
+
+    c0 = leds[ind0]
+    c1 = leds[ind0+1]
+
+    c_interp = [c0[i]*k0 + c1[i]*k1 for i in range(3)]
+    c_interp = [int(c) for c in c_interp]
+
+    return c_interp
 
 
 
 
+def run_lightshow(tree:Tuct,lightshow):
+
+    assert light_show_dict_valid(tree.nr_leds,lightshow) # Invaliud lightshow
+
+    to = time.ticks_cpu()*1/1e6
+
+    intens = 1
+    tree.set_all_leds(0,0,0,intens)
+
+    tf = lightshow['time'][-1]
+
+    while True:
+
+        t = time.ticks_cpu()*1/1e6 - to
+
+        # Reset clock
+        if t > tf:
+            to = time.ticks_cpu()*1/1e6
+            continue
+
+        # Interpolate each led's shedule
+        for i in range(tree.nr_leds):
+
+            rgb = interp_leds(t,lightshow['time'],lightshow['leds'][i])
+            tree.leds[i].set_rgb(rgb)
+
+        tree.update_tree()
+        time.sleep_ms(5)
+        
+
+def test_ls1(tree):
+
+    r = (250,0,0)
+    g = (0,250,0)
+    b = (0,0,250)
+
+    ls = {
+        'time':[0.0,1.0,1.1,2.1,2.2,3.2,3.3],
+        'leds':[
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r]
+            ]
+    }
+
+    run_lightshow(tree,ls)
+
+def test_ls2(tree):
+
+    r = (250,0,0)
+    g = (0,250,0)
+    b = (0,0,250)
+
+    ls = {
+        'time':[0.0,1.0,1.1,2.1,2.2,3.2,3.3],
+        'leds':[
+            [r,r,g,g,b,b,r],
+            [g,g,b,b,r,r,g],
+            [b,b,r,r,g,g,b],
+            [r,r,g,g,b,b,r],
+            [g,g,b,b,r,r,g],
+            [b,b,r,r,g,g,b],
+            [r,r,g,g,b,b,r],
+            [g,g,b,b,r,r,g],
+            [b,b,r,r,g,g,b],
+            [r,r,g,g,b,b,r],
+            [g,g,b,b,r,r,g],
+            [b,b,r,r,g,g,b]
+            ]
+    }
+
+    run_lightshow(tree,ls)
 
 
 
@@ -209,9 +343,9 @@ def main():
     tree = Tuct(12,1,0)
     args = [tree]
     #args = (tree)
-    _thread.start_new_thread(christmas2,args)
+    _thread.start_new_thread(test_ls2,args)
     while True:
-        time.sleep(1)
+        time.sleep(5)
         print("wazup")
 
 
