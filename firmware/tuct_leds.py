@@ -84,22 +84,24 @@ class Tuct:
 
 
 def test_leds1():
-    tree = Tuct(12,1,0)
+    tree = Tuct(14,1,0)
 
     intes = 1
     while True:
-        intes += 1
 
-        if intes > 15:
-            intes = 0
-        for i in range(12):
+        tree.set_all_leds(200,200,0,1)
+        tree.update_tree()
+        time.sleep(2)
+
+
+        for i in range(14):
 
             tree.set_all_leds(0,0,0,0)
 
             tree.leds[i].set_intens(intes)
             tree.leds[i].set_rgb((100,10,0))
             tree.update_tree()
-            time.sleep_ms(10)
+            time.sleep_ms(500)
 
         
 def christmas1(tree:Tuct):
@@ -303,6 +305,8 @@ def test_ls1(tree):
             [r,r,g,g,b,b,r],
             [r,r,g,g,b,b,r],
             [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
+            [r,r,g,g,b,b,r],
             [r,r,g,g,b,b,r]
             ]
     }
@@ -329,6 +333,8 @@ def test_ls2(tree):
             [b,b,r,r,g,g,b],
             [r,r,g,g,b,b,r],
             [g,g,b,b,r,r,g],
+            [b,b,r,r,g,g,b],
+            [b,b,r,r,g,g,b],
             [b,b,r,r,g,g,b]
             ]
     }
@@ -340,7 +346,8 @@ def test_ls2(tree):
 def main():
     # Test led thread
     print("eeyo")
-    tree = Tuct(12,1,0)
+    tree = Tuct(14,1,0)
+    #christmas1(tree)
     args = [tree]
     #args = (tree)
     _thread.start_new_thread(test_ls2,args)
