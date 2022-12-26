@@ -1,8 +1,9 @@
 
 from machine import Pin
 import time
-import _thread
 import random
+import micropython
+import gc
 
 class LedState:
 
@@ -256,8 +257,10 @@ def interp_leds(t, time_vec, leds:list):
 
 
 def run_lightshow(tree:Tuct,lightshow):
-
+    global show_int
     assert light_show_dict_valid(tree.nr_leds,lightshow) # Invaliud lightshow
+
+    start_int = show_int
 
     to = time.ticks_cpu()*1/1e6
 
@@ -270,10 +273,14 @@ def run_lightshow(tree:Tuct,lightshow):
 
         t = time.ticks_cpu()*1/1e6 - to
 
+        # user changed lightshow
+        if start_int != show_int:
+            break
+
         # Reset clock
         if t > tf:
             to = time.ticks_cpu()*1/1e6
-            continue
+            break
 
         # Interpolate each led's shedule
         for i in range(tree.nr_leds):
@@ -319,31 +326,146 @@ def test_ls2(tree):
     g = (0,250,0)
     b = (0,0,250)
 
+
+    th = 0.8
+    td = 0.5
+    tvec = []
+    t0 = 0.0
+    tvec.append(t0)
+    for i in range(3):
+
+        tvec.append(t0 + th)
+        tvec.append(t0 + th + td)
+        t0 += th + td
+
+
+    #[0.0, 1.0, 1.01, 2.1, 2.11, 3.2, 3.21]
     ls = {
-        'time':[0.0,1.0,1.1,2.1,2.2,3.2,3.3],
+        'time':tvec,
         'leds':[
-            [r,r,g,g,b,b,r],
-            [g,g,b,b,r,r,g],
-            [b,b,r,r,g,g,b],
-            [r,r,g,g,b,b,r],
-            [g,g,b,b,r,r,g],
-            [b,b,r,r,g,g,b],
-            [r,r,g,g,b,b,r],
-            [g,g,b,b,r,r,g],
-            [b,b,r,r,g,g,b],
-            [r,r,g,g,b,b,r],
-            [g,g,b,b,r,r,g],
-            [b,b,r,r,g,g,b],
-            [b,b,r,r,g,g,b],
-            [b,b,r,r,g,g,b]
+            [r,r,g,g,b,b,r],#1
+            [r,r,g,g,b,b,r],#2
+            [b,b,r,r,g,g,b],#2
+            [b,b,r,r,g,g,b],#1
+            [g,g,b,b,r,r,g],#1
+            [g,g,b,b,r,r,g],#2
+            [r,r,g,g,b,b,r],#2
+            [r,r,g,g,b,b,r],#1
+            [b,b,r,r,g,g,b],#1
+            [b,b,r,r,g,g,b],#2
+            [g,g,b,b,r,r,g],#2
+            [g,g,b,b,r,r,g],#1
+            [r,r,g,g,b,b,r],#1
+            [r,r,g,g,b,b,r]#2
+            ]
+    }
+
+    run_lightshow(tree,ls)
+"""
+
+    # Green and red side
+    run_lightshow(tree,ls)
+
+            [r,r,r,r,r,r,r], #1
+            [g,g,g,g,g,g,g], #2
+            [g,g,g,g,g,g,g], #2
+            [r,r,r,r,r,r,r], #1
+            [r,r,r,r,r,r,r], #1
+            [g,g,g,g,g,g,g], #2
+            [g,g,g,g,g,g,g], #2
+            [r,r,r,r,r,r,r], #1
+            [r,r,r,r,r,r,r], #1
+            [g,g,g,g,g,g,g], #2
+            [g,g,g,g,g,g,g], #2
+            [r,r,r,r,r,r,r], #1
+            [r,r,r,r,r,r,r], #1
+            [g,g,g,g,g,g,g]  #2
+            ]
+"""
+
+def cool_ls2(tree):
+
+    r = (250,0,0)
+    g = (0,250,0)
+    b = (0,0,250)
+    
+    th = 0.8
+    td = 0.1
+    tvec = []
+    t0 = 0.0
+    tvec.append(t0)
+    for i in range(3):
+
+        tvec.append(t0 + th)
+        tvec.append(t0 + th + td)
+        t0 += th + td
+
+
+    #[0.0, 1.0, 1.01, 2.1, 2.11, 3.2, 3.21]
+    ls = {
+        'time':tvec,
+        'leds':[
+            [r,r,g,g,b,b,r],#1
+            [r,r,g,g,b,b,r],#2
+            [b,b,r,r,g,g,b],#2
+            [b,b,r,r,g,g,b],#1
+            [g,g,b,b,r,r,g],#1
+            [g,g,b,b,r,r,g],#2
+            [r,r,g,g,b,b,r],#2
+            [r,r,g,g,b,b,r],#1
+            [b,b,r,r,g,g,b],#1
+            [b,b,r,r,g,g,b],#2
+            [g,g,b,b,r,r,g],#2
+            [g,g,b,b,r,r,g],#1
+            [r,r,g,g,b,b,r],#1
+            [r,r,g,g,b,b,r]#2
             ]
     }
 
     run_lightshow(tree,ls)
 
+last_trigg = 0
+def b1_callback(hej):
+    global show_int, last_trigg
+    now = time.ticks_cpu()*1/1e6
+    if now - last_trigg > 0.3:
+        last_trigg = now
+        print("b1")
+        show_int += 1
+        print(show_int)
+
+
+def light_main(tree):
+    global show_int
+    show_int = 0
+    b1 = Pin(3,Pin.IN,Pin.PULL_DOWN)
+    b2 = Pin(2,Pin.IN,Pin.PULL_DOWN)
+    b1.irq(trigger=Pin.IRQ_FALLING, handler=b1_callback)
+
+    gc_ink = 0
+
+    while True:
+        gc.collect()
+        gc_ink += 1
+        if gc_ink > 10:
+            print(micropython.mem_info())
+            gc_ink = 0
+
+        if show_int > 2:
+            show_int = 0
+        if show_int == 0:
+            test_ls1(tree)
+        if show_int == 1:
+            test_ls2(tree)
+        if show_int == 2:
+            cool_ls2(tree)
 
 
 def main():
+
+    tree = Tuct(14,1,0)
+    light_main(tree)
+
     # Test led thread
     print("eeyo")
     tree = Tuct(14,1,0)
