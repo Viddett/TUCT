@@ -7,7 +7,7 @@ function glenn_test(arg) {
 }
 
 function get_tree_status(ip_adress) {
-    console.log("GET TREE STATUS")
+    //console.log("GET TREE STATUS")
 
     return fetch('http://' + ip_adress + '/state', {
         method: 'GET',

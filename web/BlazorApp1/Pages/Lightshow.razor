@@ -3,6 +3,8 @@
 @using BlazorApp1.Data
 @using BlazorApp1.Shared
 
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
 
 @inject IJSRuntime JS
 
@@ -13,9 +15,15 @@
 <button class="btn btn-primary" @onclick=btn_send_tree_lightshow>Download to tree</button>
 <button class="btn btn-primary" @onclick=btn_upload_tree_lightshow>Upload from tree</button>
 
+<br />
+
 @code {
 
-    int nr_leds = 12;
+    // These should be possible to change with some input-fields
+    private float hold_time = 0.8f;
+    private float transition_time = 0.1f;
+
+    int nr_leds = 14;
     int nr_steps = 5;
 
     int led_index;
@@ -49,13 +57,21 @@
         //JS.InvokeVoidAsync("glenn_test","gött arg");
         System.Diagnostics.Debug.Print("uplaod btn");
 
-        var state = await JS.InvokeAsync<string>("get_tree_status", "127.0.0.1:5000");
+        Dictionary<String, String> req_dict = new Dictionary<string, string>();
+
+        req_dict.Add("request", "return_custom_ls");
+
+        string req_json = JsonSerializer.Serialize(req_dict);
+        var state = await JS.InvokeAsync<string>("set_tree_status", "127.0.0.1:5000",req_json);
         System.Diagnostics.Debug.Print("TREE STATE");
 
         System.Diagnostics.Debug.Print(state);
 
+        var model = JsonSerializer.Deserialize<Model_LS>(state);
+
 
     }
+
 
     private async Task btn_open_lightshow()
     {
