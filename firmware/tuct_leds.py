@@ -20,7 +20,7 @@ class LedState:
         self._blue = self.limit_val(rgb[2],255)
 
     def set_intensity(self, i: int):
-        self._intensity = self.limit_val(i,32)
+        self._intensity = self.limit_val(i,16)
 
     def limit_val(self, x: int, max: int) -> int:
         """
