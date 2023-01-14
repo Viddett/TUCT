@@ -16,16 +16,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     
     txt = [str(i+1) for i in range(37)]
     txt = ''.join(txt)
+    txt = '1337'
 
     txt_bytez = txt.encode('utf-8')
     print(txt_bytez)
     print(len(txt_bytez))
 
-    bytez = struct.pack('ii',13,len(txt_bytez))
+    bytez = struct.pack('ii',1,len(txt_bytez))
     s.sendall(bytez)
     s.sendall(txt_bytez)
 
-    #data = s.recv(1024)
+    data = s.recv(8)
+    print(data)
 
 
 

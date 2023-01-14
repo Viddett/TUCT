@@ -7,31 +7,8 @@ using System.Text;
 namespace TreeMaster
 {
 
-
-
     public class NoiceSocksM8
     {
-
-
-        private class Message
-        {
-            public int seq;
-            public String msg;
-
-            public Message(int seq, String msg)
-            {
-                this.seq = seq; 
-                this.msg = msg;
-            }
-
-            public override String ToString()
-            {
-                return "SEQ " + seq + "\n " + msg;
-            }
-
-        }
-
-
 
 
         public void run_socks()
