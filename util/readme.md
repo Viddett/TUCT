@@ -1,11 +1,8 @@
 ## Dummy pico
 
-For develoopment, where the website wants to make post-requests.
+For development, creates a TCP-socket connection to the server.
 
 
-Run cmd:
+Acts like a "virtual pico"
 
-```
-python -m flask --app pico_server_dummy run
-```
 
