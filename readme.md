@@ -12,4 +12,4 @@
 
 ## Tree master
 
-![](tree_master_stateflow.drawio.png)
+![](doc/tree_master_stateflow.drawio.png)
