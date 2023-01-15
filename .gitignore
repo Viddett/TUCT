@@ -261,3 +261,8 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# Draw.io tmp files
+*.bkp 
+*.dtmp
+
