@@ -9,3 +9,7 @@
 * `web` - Blazor-Container in cloud handling the interactions with the user
 
 ![](doc/architecture.png)
+
+## Tree master
+
+![](tree_master_stateflow.drawio.png)
