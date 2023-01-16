@@ -1,4 +1,5 @@
 import tuct_leds
+import server_connect
 import time 
 from machine import Pin
 
@@ -26,5 +27,7 @@ tree.set_all_leds(0,0,0,0)
 tree.update_tree()
 
 if start_lights:
-    tuct_leds.light_main(tree)
+    #tuct_leds.light_main(tree)
+    server_connect.main()
+    
 
