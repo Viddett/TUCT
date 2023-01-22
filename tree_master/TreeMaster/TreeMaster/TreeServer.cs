@@ -57,7 +57,7 @@ namespace TreeMaster
             }
             else
             {
-                if (10 <= m1.seq && m1.seq < 20)
+                if (m1.seq == 30)
                 {
                     // Msg from the web-page, aka a command to a tree
                     handle_web_command(client, m1);
