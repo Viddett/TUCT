@@ -10,6 +10,10 @@
 
 ![](doc/architecture.png)
 
+## Donwload to PICO
+
+Only download the contents of the *firmware* folder!
+
 ## Tree master
 
 ![](doc/tree_master_stateflow.drawio.png)
