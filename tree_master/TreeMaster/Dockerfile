@@ -18,6 +18,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-EXPOSE 1337
+#EXPOSE 1337
+EXPOSE 443
 
 ENTRYPOINT ["dotnet", "TreeMaster.dll"]
