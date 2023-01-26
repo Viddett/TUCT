@@ -34,8 +34,8 @@ namespace TreeMaster
              */
 
             var seq_bytes = BitConverter.GetBytes(this.seq);
-            var len_bytes = BitConverter.GetBytes(this.msg.Length);
             var messageBytes = Encoding.UTF8.GetBytes(this.msg);
+            var len_bytes = BitConverter.GetBytes(messageBytes.Length);
 
             int total_bytez = 8 + messageBytes.Length;
 
@@ -53,6 +53,8 @@ namespace TreeMaster
             /*
              Reads the message object sent on the stream
              */
+
+            // Might want to do something with the read result 'read_res'...
 
             byte[] seq_and_len = new byte[8];
             int read_res = stream.Read(seq_and_len, 0, 8);

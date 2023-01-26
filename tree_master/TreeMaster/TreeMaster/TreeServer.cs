@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿
 using System.Net.Sockets;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
 namespace TreeMaster
@@ -49,6 +45,7 @@ namespace TreeMaster
             // First message decides what type of connection it is
             var m1 = Message.from_stream(stream);
 
+            Console.WriteLine(m1.ToString());
             
             if (m1.seq == 1)
             {
@@ -77,10 +74,32 @@ namespace TreeMaster
         {
             // What can the web request?
             JObject msg_json = first_msg.as_json();
+            int tree_id;
+            var stream = client.GetStream();
+            try
+            {
+                tree_id = (int) msg_json["tree_id"];
+            }
+            catch (Exception e) {
+                // No tree id
+                tree_id = -1;
+            }
+            
+            if (tree_connections.Keys.Contains(tree_id))
+            {
 
-            // msg_json.gran_id ???
-            //msg_json.lightshow ???
-            //msg_json.send_ls_to_tree ??
+                var conn = tree_connections[tree_id];
+                string data_to_send = (string) msg_json["msg"];
+                string resp = conn.send_to_tree(data_to_send,600);
+
+                Message resp_msg = new Message(31, resp);
+                stream.Write(resp_msg.to_bytes());
+
+            }
+            else {
+                Message err_resp = new Message(88,"No tree found with that ID");
+                stream.Write(err_resp.to_bytes());
+            }
 
         }
 
@@ -88,7 +107,7 @@ namespace TreeMaster
         {
             int id = Int32.Parse(first_msg.msg);
 
-            var conn = new TreeConnection(client, id);
+            var conn = new TreeConnection(client);
 
             if (tree_connections.Keys.Contains(id))
             {
