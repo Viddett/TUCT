@@ -108,6 +108,7 @@ class HttpServer:
             self._send_bad_req(conn)
 
         conn.close()
+        print("Closed")
 
     def _send_bad_req(self,conn):
             conn.send('HTTP/1.1 400 Bad request\n')
@@ -150,8 +151,8 @@ class HttpServer:
 
     def _handle_post(self,conn,url,args,request):
         #print("post set stuff")
-        conn.send('Content-Type: application/json\n\n')
-        conn.send('{"gott":"gott_me_kebab"}')
+        #conn.send('Content-Type: application/json\n\n')
+        #conn.send('{"gott":"gott_me_kebab"}')
         
         req_lines = request.split('\n')
         #print(req_lines)
@@ -166,7 +167,15 @@ class HttpServer:
 
         try:
             obj = json.loads(body)
-            self._post_callback(obj)
+            resp = self._post_callback(obj)
+
+            resp_json = json.dumps(resp)
+            print(resp_json)
+
+            conn.send('Connection: close\n')
+            conn.send('Content-Type: application/json\n\n')
+            
+            conn.send(resp_json)
         except:
             print("failed to parse josbn!")
 
@@ -180,6 +189,8 @@ def post_callback(args):
     print("POST CALLBACK")
     print(args)
 
+    return {"status":'glenn'}
+
 
 
 if __name__ == '__main__':
@@ -188,6 +199,7 @@ if __name__ == '__main__':
     connect_wifi()
     print("starting server")
     server = HttpServer(get_callback,post_callback)
+    print("LEESGO")
     server.start_server()
     server._server_thread()
 

@@ -7,7 +7,7 @@ function glenn_test(arg) {
 }
 
 function get_tree_status(ip_adress) {
-    //console.log("GET TREE STATUS")
+    console.log("GET TREE STATUS")
 
     return fetch('http://' + ip_adress + '/state', {
         method: 'GET',
@@ -21,9 +21,10 @@ function get_tree_status(ip_adress) {
 
 function set_tree_status(ip_adress, obj) {
 
-    // JSON.stringify({ "id": 78912 })
+    console.log("SET TREE STATUS")
+    console.log(obj)
 
-    fetch('http://' + ip_adress + '/', {
+    return fetch('http://' + ip_adress + '/', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -31,8 +32,32 @@ function set_tree_status(ip_adress, obj) {
         },
         body: JSON.stringify(obj)
     })
+        .then(response => console.log(response))
         .then(response => response.json())
-        .then(response => console.log(JSON.stringify(response)))
+        .then(response => console.log(response))
+        .then(response => JSON.stringify(response))
+       
+}
+
+
+async function set_tree_status2(ip_adress, obj) {
+
+    console.log("SET TREE STATUS")
+    console.log(obj)
+
+    const resp = await fetch('http://' + ip_adress + '/', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(obj)
+    })
+    const res_obj = await resp.json()
+    console.log(res_obj)
+    return JSON.stringify(res_obj)
+
 
 }
+
 

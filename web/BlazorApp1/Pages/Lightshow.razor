@@ -6,6 +6,7 @@
 @using System.Text.Json;
 @using System.Text.Json.Serialization;
 
+@inject IJSRuntime JS
 
 <h3>lightshow</h3>
 
@@ -54,6 +55,18 @@
     {
         // Upload LS from tree
         System.Diagnostics.Debug.Print("uplaod btn");
+
+        Dictionary<String, String> req_dict = new Dictionary<string, string>();
+
+        req_dict.Add("request", "return_custom_ls");
+
+        string req_json = JsonSerializer.Serialize(req_dict);
+        var state = await JS.InvokeAsync<string>("set_tree_status2", "192.168.1.92", req_json); //127.0.0.1:5000
+        System.Diagnostics.Debug.Print("TREE STATE");
+        
+        System.Diagnostics.Debug.Print(state);
+
+        var model = JsonSerializer.Deserialize<Model_LS>(state);
 
     }
 
