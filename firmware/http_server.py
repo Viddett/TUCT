@@ -68,6 +68,9 @@ class HttpServer:
         self.socket.close()
         print("Server stopped")
 
+
+
+
     def stop_server(self):
         self._stop_flag = True 
         while self._stop_flag:
@@ -75,8 +78,9 @@ class HttpServer:
 
 
     def _handle_conn(self,conn, addr):
-        request = conn.recv(2024)
-        request = request.decode("utf-8") 
+        request = ""
+        req_bytes = conn.recv(1024)
+        request = req_bytes.decode("utf-8") 
         #print(request)
         
         request_lines = request.split('\n')
@@ -158,26 +162,58 @@ class HttpServer:
         #print(req_lines)
         body = ""
         body_sep = '\r\n\r\n'
+
         if body_sep in request:
+            
+            body_len = 0
+            for lin in req_lines:
+                if 'Content-Length' in lin:
+                    body_len = int(lin.split(':')[1])
+                    break 
+            
+            #print("Body len " + str(body_len))
+
+
+
             body = request.split(body_sep)[1]
+
+            extra_rec = body_len - len(body)
+            #print("Recieveing extra " + str(extra_rec))
+            req_bytes = conn.recv(extra_rec)
+            body += req_bytes.decode("utf-8") 
+            #body = body.strip()
+
+
+
       
-        if len(body)>0:
+        if len(body)>0 and False:
             print("Body")
             print(body)
-
+        obj = {}
         try:
+            #body = body.replace('\n','')
             obj = json.loads(body)
-            resp = self._post_callback(obj)
-
-            resp_json = json.dumps(resp)
-            print(resp_json)
-
-            conn.send('Connection: close\n')
-            conn.send('Content-Type: application/json\n\n')
-            
-            conn.send(resp_json)
         except:
-            print("failed to parse josbn!")
+            print("Failed to parse JSON from server")
+            resp = {'status':'not gud'}
+        
+        try:
+            resp = self._post_callback(obj)
+        except Exception as e:
+            print("Failed to run post callback")
+            print(e)
+            raise e
+            resp = {'status':'gud'}
+
+
+        resp_json = json.dumps(resp)
+        print(resp_json)
+
+        conn.send('Connection: close\n')
+        conn.send('Content-Type: application/json\n\n')
+        
+        conn.send(resp_json)
+
 
 
 def get_callback():
@@ -191,7 +227,7 @@ def post_callback(args):
 
     return {"status":'glenn'}
 
-
+glenn = 1
 
 if __name__ == '__main__':
 

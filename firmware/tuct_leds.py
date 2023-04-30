@@ -292,6 +292,46 @@ def run_lightshow(tree:Tuct,lightshow):
         time.sleep_ms(5)
 
 
+
+
+to_LS_start = 0
+def run_lightshow_step(tree:Tuct):
+    global show_int, ls_glob_0,to_LS_start
+    lightshow = ls_glob_0
+    assert light_show_dict_valid(tree.nr_leds,lightshow) # Invaliud lightshow
+
+    start_int = show_int
+
+    #to = time.ticks_cpu()*1/1e6
+
+    intens = 1
+    #tree.set_all_leds(0,0,0,intens)
+
+    tf = lightshow['time'][-1]
+
+    while True:
+
+        t = time.ticks_cpu()*1/1e6 - to
+
+        # user changed lightshow
+        if start_int != show_int:
+            break
+
+        # Reset clock
+        if t > tf:
+            to = time.ticks_cpu()*1/1e6
+            break
+
+        # Interpolate each led's shedule
+        for i in range(tree.nr_leds):
+
+            rgb = interp_leds(t,lightshow['time'],lightshow['leds'][i])
+            tree.leds[i].set_rgb(rgb)
+
+        tree.update_tree()
+        time.sleep_ms(5)
+
+
 def test_ls1(tree):
 
     r = (250,0,0)
@@ -442,7 +482,7 @@ def light_main(tree):
     b2 = Pin(2,Pin.IN,Pin.PULL_DOWN)
     b1.irq(trigger=Pin.IRQ_FALLING, handler=b1_callback)
 
-    gc_ink = 0
+    #gc_ink = 0
 
     while True:
         gc.collect()
@@ -459,6 +499,25 @@ def light_main(tree):
             test_ls2(tree)
         if show_int == 2:
             cool_ls2(tree)
+
+gc_ink = 0
+
+def light_step():
+    global show_int, gc_ink
+    gc.collect()
+    gc_ink += 1
+    if gc_ink > 10:
+        print(micropython.mem_info())
+        gc_ink = 0
+
+    if show_int > 2:
+        show_int = 0
+    if show_int == 0:
+        test_ls1(tree)
+    if show_int == 1:
+        test_ls2(tree)
+    if show_int == 2:
+        cool_ls2(tree)
 
 
 def main():

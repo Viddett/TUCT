@@ -16,6 +16,10 @@
     private string color = "#F1F7E9";
     private string button_text = "";
 
+    protected override async Task OnInitializedAsync()
+    {
+        //set_led_color(color);
+    }
 
     void onClickFunc()
     {
@@ -36,7 +40,12 @@
     void set_led_color(string hex_color)
     {
         Color color = ColorTranslator.FromHtml(hex_color);
-        led.set_rgb(color.R, color.G, color.B);
+        int r, g, b;
+        r = color.R * 255 / 190;
+        g = color.G * 255 / 190;
+        b = color.B * 255 / 190;
+
+        led.set_rgb(r,g,b);
         led.set_intens(color.A);
     }
 
