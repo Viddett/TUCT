@@ -263,6 +263,12 @@ __pycache__/
 *.pyc
 
 # Draw.io tmp files
-*.bkp 
+*.bkp
 *.dtmp
+
+#VS code folder
+.vscode/*
+*/.vscode/*
+
+*.pyi
 

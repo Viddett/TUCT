@@ -6,6 +6,7 @@
 @using System.Text.Json;
 @using System.Text.Json.Serialization;
 
+@inject IJSRuntime JS
 
 <h3>lightshow</h3>
 
@@ -55,6 +56,18 @@
         // Upload LS from tree
         System.Diagnostics.Debug.Print("uplaod btn");
 
+        Dictionary<String, String> req_dict = new Dictionary<string, string>();
+
+        req_dict.Add("request", "return_custom_ls");
+
+        string req_json = JsonSerializer.Serialize(req_dict);
+        var state = await JS.InvokeAsync<string>("set_tree_status2", "192.168.1.96", req_json); //127.0.0.1:5000
+        System.Diagnostics.Debug.Print("TREE STATE");
+
+        System.Diagnostics.Debug.Print(state);
+
+        var model = JsonSerializer.Deserialize<Model_LS>(state);
+
     }
 
 
@@ -72,6 +85,24 @@
 
         System.Diagnostics.Debug.Print("sned btn");
 
+
+        //Dictionary<String, String> req_dict = new Dictionary<string, string>();
+
+        //req_dict.Add("request", "send_custom_ls");
+
+        var req = create_LS_str();
+
+
+
+        //string req_json = JsonSerializer.Serialize(req);
+        var state = await JS.InvokeAsync<string>("set_tree_status2", "192.168.1.96", req); //127.0.0.1:5000
+        System.Diagnostics.Debug.Print("TREE STATE");
+
+        System.Diagnostics.Debug.Print(state);
+
+        var model = JsonSerializer.Deserialize<Model_LS>(state);
+
+
     }
 
 
@@ -80,6 +111,74 @@
         // Save lightshow to user
         System.Diagnostics.Debug.Print("Save LS btn");
     }
+
+
+    private Model_LS create_LS_dict()
+    {
+        Model_LS res = new Model_LS();
+
+        res.time = new float[5];
+        res.time[0] = 0.0f;
+        res.time[1] = 1.0f;
+        res.time[2] = 2.0f;
+        res.time[3] = 3.0f;
+        res.time[4] = 4.0f;
+
+        res.leds = new int[14,5,3];
+
+        for (int row = 0; row < 14; row++)
+        {
+            for(int col = 0; col < 5; col++)
+            {
+                var rgb = leds[row, col].get_rgb();
+
+                res.leds[row, col, 0] = rgb[0];
+                res.leds[row, col, 1] = rgb[1];
+                res.leds[row, col, 2] = rgb[2];
+            }    
+        }
+
+
+        return res;
+
+    }
+
+
+
+    private string create_LS_str()
+    {
+        string res = "{ 'time':[0.0,1.0,2.0,3.0,4.0],\n 'leds':[";
+
+
+        for (int row = 0; row < 14; row++)
+        {
+            if(row > 0)
+            {
+                res = res + ", ";
+            }
+            res = res + "[";
+            for(int col = 0; col < 5; col++)
+            {
+                var rgb = leds[row, col].get_rgb();
+                string tmp = "[" + rgb[0].ToString() + "," + rgb[1].ToString() + "," + rgb[2].ToString() + "]";
+                if (col > 0)
+                {
+                    res = res + ",";    
+                }
+                res = res + tmp;
+            }    
+            res = res + "]";
+        }
+        res = res + "]}";
+
+        res = res.Replace('\'', '"');
+
+        return res;
+
+    }
+
+
+
 }
 
 
