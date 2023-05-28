@@ -14,11 +14,13 @@ tree = tuct_leds.Tuct(14,1,0)
 LS = lightshow.LightshowRunner(tree)
 
 def get_callback2():
+    global LS
     print("GET CALLBACK")
 
-    return {"kebab_lvl":13337, "svarv_lvlv":10009009420, "rgb":"fett"}
+    return LS.get_current_ls()
 
 def post_callback2(obj):
+    global LS
     print("POST CALLBACK")
     print(obj)
     #obj = obj.replace('\n','')
@@ -26,9 +28,13 @@ def post_callback2(obj):
     obj = json.loads(obj)
     print(type(obj))
 
+    LS.set_custom_ls(obj)
+
+    """
     for ri in range(14):
         for ci in range(5):
             LIGHTSHOW['leds'][ri][ci] = obj['leds'][ri][ci]
+    """
 
     return {"status":'glenn'}
 

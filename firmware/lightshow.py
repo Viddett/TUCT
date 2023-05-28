@@ -51,7 +51,7 @@ class LightshowRunner:
             # Interpolate each led's shedule
         for i in range(self.tree.nr_leds):
 
-            rgb = tuct_leds.interp_leds(t,LS['time'],LS['leds'][i])
+            rgb = self._interp_leds(t,LS['time'],LS['leds'][i])
             self.tree.leds[i].set_rgb(rgb)
 
         self.tree.update_tree()
@@ -90,18 +90,19 @@ class LightshowRunner:
         ls_ok = self.light_show_dict_valid(ls)
         if ls_ok:
             self.custom_ls = ls 
+            self.ls_nr = 4
         return ls_ok 
 
 
 
-    def light_show_dict_valid(ls:dict):
+    def light_show_dict_valid(self,ls:dict):
 
         ls_valid = True
 
         nr_time_steps = len(ls['time'])
         nr_leds_in_ls = len(ls['leds'])
 
-        ls_valid &= nr_leds == nr_leds_in_ls
+        ls_valid &= self.tree.nr_leds == nr_leds_in_ls
 
         for i in range(len(ls['leds'])):
 
