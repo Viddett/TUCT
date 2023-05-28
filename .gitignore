@@ -268,5 +268,7 @@ __pycache__/
 
 #VS code folder
 .vscode/*
+*/.vscode/*
 
-.vscode/*
+*.pyi
+
