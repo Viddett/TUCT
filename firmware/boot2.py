@@ -4,6 +4,7 @@ from machine import Pin, Timer
 from http_server import HttpServer, connect_wifi
 import json
 import lightshow
+import uasyncio
 
 
 b1 = Pin(3,Pin.PULL_DOWN)
@@ -98,10 +99,26 @@ blink_all_leds(2)
 def light_tim_callback(e):
     LS.lightshow_step()
 
+async def run_lightshow(light_show):
+    while True:
+        light_show.lightshow_step()
+        uasyncio.sleep_ms(90)
+
+async def run_server(server):
+    await server._server_thread()
+
 tree.set_all_leds(200,0,0,10)
 
 b1.irq(trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING, handler=b1_callback)
 
-soft_timer = Timer(mode=Timer.PERIODIC, period=90, callback=light_tim_callback)
+# soft_timer = Timer(mode=Timer.PERIODIC, period=90, callback=light_tim_callback)
 
-server._server_thread()
+# server._server_thread()
+
+async def run_all(ls, server):
+    uasyncio.create_task(run_lightshow(ls))
+    uasyncio.create_task(run_server(server))
+    while True:
+        uasyncio.sleep(10)
+
+uasyncio.run(run_all(LS, server))

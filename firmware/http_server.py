@@ -3,6 +3,7 @@ import time,network
 import wifi_creds
 import json
 import index
+import uasyncio
 
 try:
     import usocket as socket
@@ -50,7 +51,7 @@ class HttpServer:
         self.stop_webserver = False
         #_thread.start_new_thread(self._server_thread,())
 
-    def _server_thread(self):
+    async def _server_thread(self):
         while not self._stop_flag:
 
             try:
@@ -64,6 +65,7 @@ class HttpServer:
 
             print('Got a connection from %s' % str(addr))
             self._handle_conn(conn,addr)
+            uasyncio.sleep_ms(10)
 
         self.socket.close()
         print("Server stopped")
