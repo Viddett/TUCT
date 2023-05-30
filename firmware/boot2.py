@@ -1,124 +1,118 @@
-import tuct_leds
-import time
-from machine import Pin, Timer
-from http_server import HttpServer, connect_wifi
-import json
-import lightshow
 import uasyncio
+import tuct
 
+# tree = tuct_leds.Tuct(14,1,0,3,2)
 
-b1 = Pin(3,Pin.PULL_DOWN)
-b2 = Pin(2,Pin.PULL_DOWN)
+# LS = lightshow.LightshowRunner(tree)
 
-tree = tuct_leds.Tuct(14,1,0)
+# def get_callback2():
+#     global LS
+#     print("GET CALLBACK")
 
-LS = lightshow.LightshowRunner(tree)
+#     return LS.get_current_ls()
 
-def get_callback2():
-    global LS
-    print("GET CALLBACK")
+# def post_callback2(obj):
+#     global LS
+#     print("POST CALLBACK")
+#     print(obj)
+#     #obj = obj.replace('\n','')
+#     #print(type(obj))
+#     obj = json.loads(obj)
+#     print(type(obj))
 
-    return LS.get_current_ls()
+#     LS.set_custom_ls(obj)
 
-def post_callback2(obj):
-    global LS
-    print("POST CALLBACK")
-    print(obj)
-    #obj = obj.replace('\n','')
-    #print(type(obj))
-    obj = json.loads(obj)
-    print(type(obj))
+#     """
+#     for ri in range(14):
+#         for ci in range(5):
+#             LIGHTSHOW['leds'][ri][ci] = obj['leds'][ri][ci]
+#     """
 
-    LS.set_custom_ls(obj)
+#     return {"status":'glenn'}
 
-    """
-    for ri in range(14):
-        for ci in range(5):
-            LIGHTSHOW['leds'][ri][ci] = obj['leds'][ri][ci]
-    """
+# def b1_callback(obj):
+#     global LS 
+#     LS.switch_ls()
 
-    return {"status":'glenn'}
+# r = (250,0,0)
+# g = (0,250,0)
+# b = (0,0,250)
 
-def b1_callback(obj):
-    global LS 
-    LS.switch_ls()
+# LIGHTSHOW = {
+#     'time':[0.0,1.0,1.1,2.1,2.2],
+#     'leds':[
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r],
+#         [r,r,g,g,r]
+#         ]
+# }
 
-r = (250,0,0)
-g = (0,250,0)
-b = (0,0,250)
-
-LIGHTSHOW = {
-    'time':[0.0,1.0,1.1,2.1,2.2],
-    'leds':[
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r],
-        [r,r,g,g,r]
-        ]
-}
-
-def blink_all_leds(r):
-    global tree
+# def blink_all_leds(r):
+#     global tree
     
-    led_ids = [(0,1),(2,3),(4,5),(6,7),(8,9),(10,11),(12,13)]
-    rgbs = [(250,0,0),(0,250,0),(0,0,250)]
+#     led_ids = [(0,1),(2,3),(4,5),(6,7),(8,9),(10,11),(12,13)]
+#     rgbs = [(250,0,0),(0,250,0),(0,0,250)]
 
-    r = 0
-    for i in range(7):
-        LI = led_ids[i]
-        tree.set_all_leds(0,0,0,0)
-        tree.leds[LI[0]].set_intens(1)
-        tree.leds[LI[0]].set_rgb(rgbs[r])
-        tree.leds[LI[1]].set_intens(1)
-        tree.leds[LI[1]].set_rgb(rgbs[r])
-        tree.update_tree()
-        time.sleep_ms(50)
+#     r = 0
+#     for i in range(7):
+#         LI = led_ids[i]
+#         tree.set_all_leds(0,0,0,0)
+#         tree.leds[LI[0]].set_intens(1)
+#         tree.leds[LI[0]].set_rgb(rgbs[r])
+#         tree.leds[LI[1]].set_intens(1)
+#         tree.leds[LI[1]].set_rgb(rgbs[r])
+#         tree.update_tree()
+#         time.sleep_ms(50)
 
 
-blink_all_leds(0)
+# blink_all_leds(0)
 
-connect_wifi()
+# connect_wifi()
 
-blink_all_leds(1)
+# blink_all_leds(1)
 
-server = HttpServer(get_callback2,post_callback2)
-server.start_server()
+# server = HttpServer(get_callback2,post_callback2)
+# server.start_server()
 
-blink_all_leds(2)
+# blink_all_leds(2)
 
-def light_tim_callback(e):
-    LS.lightshow_step()
+# def light_tim_callback(e):
+#     LS.lightshow_step()
 
-async def run_lightshow(light_show):
-    while True:
-        light_show.lightshow_step()
-        await uasyncio.sleep_ms(90)
+# async def run_lightshow(light_show):
+#     while True:
+#         light_show.lightshow_step()
+#         await uasyncio.sleep_ms(90)
 
-async def run_server(server):
-    await server._server_thread()
+# async def run_server(server):
+#     await server._server_thread()
 
-tree.set_all_leds(200,0,0,10)
-
-b1.irq(trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING, handler=b1_callback)
+# tree.set_all_leds(200,0,0,10)
 
 # soft_timer = Timer(mode=Timer.PERIODIC, period=90, callback=light_tim_callback)
 
 # server._server_thread()
 
-async def run_all(ls, server):
-    uasyncio.create_task(run_lightshow(ls))
-    uasyncio.create_task(run_server(server))
-    while True:
-        await uasyncio.sleep(10)
+# async def run_all(ls, server):
+#     new_server = await uasyncio.start_server(socket_handler, '', 80)
+#     uasyncio.create_task(run_lightshow(ls))
+#     uasyncio.create_task(run_server(server))
+#     while True:
+#         await uasyncio.sleep(10)
 
-uasyncio.run(run_all(LS, server))
+# uasyncio.run(run_all(LS, server))
+
+tuct_object = tuct.Tuct()
+
+uasyncio.run(tuct_object.main())

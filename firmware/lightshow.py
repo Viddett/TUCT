@@ -5,9 +5,9 @@ import tuct_leds
 
 class LightshowRunner:
 
-    self.tree:tuct_leds.Tuct
+    self.tree:tuct_leds.Tree
 
-    def __init__(self,tree:tuct_leds.Tuct):
+    def __init__(self,tree:tuct_leds.Tree):
         self.tree = tree
         self.ls_nr = 0
 
@@ -39,24 +39,22 @@ class LightshowRunner:
 
 
     def lightshow_step(self):
-        LS = self.get_current_ls()
+        lightshow_tmp = self.get_current_ls()
         
         t = self._get_tick() - self.t0 
 
         # If internal clock has overflow:n
-        if t < 0 or t >= LS['time'][-1]:
+        if t < 0 or t >= lightshow_tmp['time'][-1]:
             self.t0 = self._get_tick()
             t = 0
 
             # Interpolate each led's shedule
         for i in range(self.tree.nr_leds):
 
-            rgb = self._interp_leds(t,LS['time'],LS['leds'][i])
+            rgb = self._interp_leds(t,lightshow_tmp['time'],lightshow_tmp['leds'][i])
             self.tree.leds[i].set_rgb(rgb)
 
         self.tree.update_tree()
-
-
 
     def switch_ls(self):
         if self.ls_nr >= 4:
@@ -65,8 +63,6 @@ class LightshowRunner:
             self.ls_nr += 1  
         
         self.t0 = self._get_tick()
-
-
 
     def get_current_ls(self):
 
@@ -80,11 +76,11 @@ class LightshowRunner:
             return LS3
         elif self.ls_nr == 4:
             return self.custom_ls
+        else:
+            return {}
 
     def get_custom_ls(self):
         return self.custom_ls 
-
-
 
     def set_custom_ls(self, ls):
         ls_ok = self.light_show_dict_valid(ls)
@@ -92,8 +88,6 @@ class LightshowRunner:
             self.custom_ls = ls 
             self.ls_nr = 4
         return ls_ok 
-
-
 
     def light_show_dict_valid(self,ls:dict):
 

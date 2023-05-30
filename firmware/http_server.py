@@ -42,6 +42,8 @@ class HttpServer:
 
         self._html_response = index.html
 
+    def socket_handler(self, reader, writer):
+        pass
 
     def start_server(self,backlog:int=5,port:int=80):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -70,14 +72,10 @@ class HttpServer:
         self.socket.close()
         print("Server stopped")
 
-
-
-
     def stop_server(self):
         self._stop_flag = True 
         while self._stop_flag:
             time.sleep_ms(200)
-
 
     def _handle_conn(self,conn, addr):
         request = ""

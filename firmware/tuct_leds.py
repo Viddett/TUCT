@@ -4,6 +4,7 @@ import time
 import random
 import micropython
 import gc
+import lightshow
 
 class LedState:
 
@@ -29,17 +30,19 @@ class LedState:
 
 
 
-class Tuct:
+class Tree:
 
-    def __init__(self,nr_leds,clock_pin,data_pin):
+    def __init__(self,nr_leds,clock_pin,data_pin,b1_pin=3,b2_pin=2):
         self.clock_T_us = 15
         self.nr_leds = nr_leds
+        
+        self.b1 = Pin(b1_pin,Pin.PULL_DOWN)
+        self.b2 = Pin(b2_pin,Pin.PULL_DOWN)
 
         self.data_pin = Pin(data_pin,Pin.OUT)
         self.clock_pin = Pin(clock_pin,Pin.OUT)
 
         self.leds = [LedState() for i in range(nr_leds)]
-
 
     def clock_out_bytev2(self,byte:int):
         self.clock_pin.off()
