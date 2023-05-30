@@ -102,7 +102,7 @@ def light_tim_callback(e):
 async def run_lightshow(light_show):
     while True:
         light_show.lightshow_step()
-        uasyncio.sleep_ms(90)
+        await uasyncio.sleep_ms(90)
 
 async def run_server(server):
     await server._server_thread()
@@ -119,6 +119,6 @@ async def run_all(ls, server):
     uasyncio.create_task(run_lightshow(ls))
     uasyncio.create_task(run_server(server))
     while True:
-        uasyncio.sleep(10)
+        await uasyncio.sleep(10)
 
 uasyncio.run(run_all(LS, server))

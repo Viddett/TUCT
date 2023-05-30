@@ -65,7 +65,7 @@ class HttpServer:
 
             print('Got a connection from %s' % str(addr))
             self._handle_conn(conn,addr)
-            uasyncio.sleep_ms(10)
+            await uasyncio.sleep_ms(10)
 
         self.socket.close()
         print("Server stopped")
