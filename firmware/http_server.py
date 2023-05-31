@@ -42,8 +42,42 @@ class HttpServer:
 
         self._html_response = index.html
 
-    def socket_handler(self, reader, writer):
-        pass
+    async def socket_handler(self, reader: uasyncio.StreamReader, writer: uasyncio.StreamWriter):
+        addr = writer.get_extra_info('peername')
+        print(f'Got a connection from {addr}.')
+
+        data: bytes = await reader.read(1024)
+        request = data.decode()
+
+        print(f'Message received: {request}')
+
+        request_lines = request.split('\n')
+
+        method = request_lines[0].split(' ')[0]
+        url = request_lines[0].split(' ')[1].strip()
+        args = dict()
+
+        for line in request_lines[1:]:
+            line = line.strip()
+            if ':' in line:
+                parts = line.split(':')
+                args[parts[0]] = parts[1]
+
+        if method == 'OPTIONS':
+            await self._send_cors_stuff_2(writer)
+            
+        elif method == 'GET':
+            await self._send_cors_stuff_2(writer)
+            await self._handle_get_2(writer,url,args,request)
+
+        elif method == 'POST':
+
+            await self._send_cors_stuff_2(writer)
+            await self._handle_post_2(writer,url,args,request,reader)
+
+        else:
+
+            await self._send_bad_req_2(writer)
 
     def start_server(self,backlog:int=5,port:int=80):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -114,11 +148,21 @@ class HttpServer:
         conn.close()
         print("Closed")
 
-    def _send_bad_req(self,conn):
+    def _send_bad_req(self,conn: socket.socket):
             conn.send('HTTP/1.1 400 Bad request\n')
             conn.send('Content-Type: text/html\n')
             conn.send('Connection: close\n')
             conn.sendall('\n')
+
+    async def _send_bad_req_2(self,writer: uasyncio.StreamWriter):
+            writer.write('HTTP/1.1 400 Bad request\n')
+            await writer.drain()
+            writer.write('Content-Type: text/html\n')
+            await writer.drain()
+            writer.write('Connection: close\n')
+            await writer.drain()
+            writer.write('\n')
+            await writer.drain()
 
     def _send_cors_stuff(self,conn):
         resp_stuff = [
@@ -133,6 +177,20 @@ class HttpServer:
         for r in resp_stuff:
             conn.sendall(r + '\n')
 
+    async def _send_cors_stuff_2(self, writer: uasyncio.StreamWriter):
+        resp_stuff = [
+            "Access-Control-Allow-Origin: *",
+            "Access-Control-Allow-Credentials : true",
+            "Access-Control-Allow-Methods : GET,HEAD,OPTIONS,POST,PUT",
+            "Access-Control-Allow-Headers:Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"
+            ]
+
+        writer.write('HTTP/1.1 200 OK\n')
+        await writer.drain()
+
+        for r in resp_stuff:
+            writer.write(r + '\n')
+            await writer.drain()
 
     def _handle_get(self,conn,url,args,request):
 
@@ -152,6 +210,30 @@ class HttpServer:
         else:
             # Bad request
             self._send_bad_req(conn)
+
+    async def _handle_get_2(self,writer: uasyncio.StreamWriter,url,args,request):
+
+        if url == '/':
+            # Default landing page
+            writer.write('Content-Type: text/html\n')
+            await writer.drain()
+            writer.write('Connection: close\n\n')
+            await writer.drain()
+            writer.write(self._html_response)
+            await writer.drain()
+            
+        elif url == '/state':
+            # return tree state as json
+            #print("get state")
+            state = self._get_callback()
+            state_json = json.dumps(state)
+            writer.write('Content-Type: application/json\n\n')
+            await writer.drain()
+            writer.write(state_json + '\n')
+            await writer.drain()
+        else:
+            # Bad request
+            await self._send_bad_req_2(writer)
 
     def _handle_post(self,conn,url,args,request):
         #print("post set stuff")
@@ -214,6 +296,69 @@ class HttpServer:
         
         conn.send(resp_json)
 
+    async def _handle_post_2(self,writer: uasyncio.StreamWriter,url,args,request:str,reader:uasyncio.StreamReader):
+        #print("post set stuff")
+        #conn.send('Content-Type: application/json\n\n')
+        #conn.send('{"gott":"gott_me_kebab"}')
+        
+        req_lines = request.split('\n')
+        #print(req_lines)
+        body = ""
+        body_sep = '\r\n\r\n'
+
+        if body_sep in request:
+            
+            body_len = 0
+            for line in req_lines:
+                if 'Content-Length' in line:
+                    body_len = int(line.split(':')[1])
+                    break 
+            
+            #print("Body len " + str(body_len))
+
+
+
+            body = request.split(body_sep)[1]
+
+            extra_rec = body_len - len(body)
+            #print("Recieveing extra " + str(extra_rec))
+            req_bytes: bytes = await reader.read(extra_rec)
+            body += req_bytes.decode("utf-8") 
+            #body = body.strip()
+
+
+
+      
+        if len(body)>0 and False:
+            print("Body")
+            print(body)
+        obj = {}
+        try:
+            #body = body.replace('\n','')
+            obj = json.loads(body)
+        except:
+            print("Failed to parse JSON from server")
+            resp = {'status':'not gud'}
+        
+        try:
+            resp = self._post_callback(obj)
+        except Exception as e:
+            print("Failed to run post callback")
+            print(e)
+            raise e
+            resp = {'status':'gud'}
+
+
+        resp_json = json.dumps(resp)
+        print(resp_json)
+
+        writer.write('Connection: close\n')
+        await writer.drain()
+        writer.write('Content-Type: application/json\n\n')
+        await writer.drain()
+        
+        writer.write(resp_json)
+        await writer.drain()
 
 
 def get_callback():

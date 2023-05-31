@@ -10,13 +10,12 @@ from http_server import HttpServer, connect_wifi
 class Tuct:
     
     def __init__(self) -> None:
-        self.tree = tuct_leds.Tree(0,1,0,3,2)
+        self.tree = tuct_leds.Tree(14,1,0,3,2)
         self.lightshow = lightshow.LightshowRunner(self.tree)
         
         self.tree.b1.irq(trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING, handler=self.b1_callback)
     
     def b1_callback(self, other) -> None:
-        print(other)
         self.lightshow.switch_ls()
 
     def blink_all_leds(self, r):
@@ -59,7 +58,7 @@ class Tuct:
     async def run_lightshow(self):
         while True:
             self.lightshow.lightshow_step()
-            await uasyncio.sleep_ms(90)
+            await uasyncio.sleep_ms(50)
 
     async def main(self):
         r = (250,0,0)
@@ -93,7 +92,7 @@ class Tuct:
         self.blink_all_leds(1)
 
         self.server = HttpServer(self.get_callback2, self.post_callback2)
-        new_server = await uasyncio.start_server(self.server.socket_handler, '', 80)
+        new_server = await uasyncio.start_server(self.server.socket_handler, '0.0.0.0', 80)
 
         self.blink_all_leds(2)
         
@@ -103,3 +102,9 @@ class Tuct:
         
         while True:
             await uasyncio.sleep(10)
+
+if __name__ == '__main__':
+
+    tuct_object = Tuct()
+
+    uasyncio.run(tuct_object.main())
