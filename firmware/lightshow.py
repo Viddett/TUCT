@@ -39,19 +39,19 @@ class LightshowRunner:
 
 
     def lightshow_step(self):
-        lightshow_tmp = self.get_current_ls()
+        current_lightshow = self.get_current_ls()
         
         t = self._get_tick() - self.t0 
 
         # If internal clock has overflow:n
-        if t < 0 or t >= lightshow_tmp['time'][-1]:
+        if t < 0 or t >= current_lightshow['time'][-1]:
             self.t0 = self._get_tick()
             t = 0
 
             # Interpolate each led's shedule
         for i in range(self.tree.nr_leds):
 
-            rgb = self._interp_leds(t,lightshow_tmp['time'],lightshow_tmp['leds'][i])
+            rgb = self._interp_leds(t,current_lightshow['time'],current_lightshow['leds'][i])
             self.tree.leds[i].set_rgb(rgb)
 
         self.tree.update_tree()

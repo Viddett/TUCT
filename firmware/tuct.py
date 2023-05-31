@@ -42,8 +42,15 @@ class Tuct:
         print(obj)
         #obj = obj.replace('\n','')
         #print(type(obj))
-        obj = json.loads(obj)
-        print(type(obj))
+        # obj = json.loads(obj)
+        # print(type(obj))
+        print(type(obj['leds'][0][0]))
+        if type(obj['leds'][0][0]) == str:
+            for i in range(len(obj['leds'])):
+                for j in range(len(obj['leds'][i])):
+                    obj['leds'][i][j]= eval(obj['leds'][i][j])
+            # print(type(obj['leds'][0][0]))
+            # print(obj)
 
         self.lightshow.set_custom_ls(obj)
 

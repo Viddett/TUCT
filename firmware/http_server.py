@@ -46,8 +46,8 @@ class HttpServer:
         addr = writer.get_extra_info('peername')
         print(f'Got a connection from {addr}.')
 
-        data: bytes = await reader.read(1024)
-        request = data.decode()
+        data: bytes = await reader.read(4096)
+        request = data.decode('utf-8')
 
         print(f'Message received: {request}')
 
@@ -71,13 +71,17 @@ class HttpServer:
             await self._handle_get_2(writer,url,args,request)
 
         elif method == 'POST':
-
             await self._send_cors_stuff_2(writer)
             await self._handle_post_2(writer,url,args,request,reader)
 
         else:
 
             await self._send_bad_req_2(writer)
+        
+        print('Closing connection...')
+        writer.close()
+        await writer.wait_closed()
+        print('Connection closed.')
 
     def start_server(self,backlog:int=5,port:int=80):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -316,18 +320,14 @@ class HttpServer:
             
             #print("Body len " + str(body_len))
 
-
-
             body = request.split(body_sep)[1]
 
             extra_rec = body_len - len(body)
-            #print("Recieveing extra " + str(extra_rec))
-            req_bytes: bytes = await reader.read(extra_rec)
-            body += req_bytes.decode("utf-8") 
+            print("Recieveing extra " + str(extra_rec))
+            if extra_rec > 0:
+                req_bytes: bytes = await reader.read(extra_rec)
+                body += req_bytes.decode("utf-8")
             #body = body.strip()
-
-
-
       
         if len(body)>0 and False:
             print("Body")
@@ -374,13 +374,21 @@ def post_callback(args):
 
 glenn = 1
 
+async def start_all():
+    server = HttpServer(get_callback,post_callback)
+    new_server = await uasyncio.start_server(server.socket_handler, '0.0.0.0', 80)
+    print("LEESGO")
+    loop = uasyncio.get_event_loop()
+    loop.run_forever()
+
 if __name__ == '__main__':
 
     print("connecting to wifi")
     connect_wifi()
     print("starting server")
-    server = HttpServer(get_callback,post_callback)
-    print("LEESGO")
-    server.start_server()
-    server._server_thread()
+    uasyncio.run(start_all())
+    # server = HttpServer(get_callback,post_callback)
+    # print("LEESGO")
+    # server.start_server()
+    # server._server_thread()
 
