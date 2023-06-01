@@ -65,7 +65,7 @@ class HttpServer:
 
         if method == 'OPTIONS':
             await self._send_cors_stuff_2(writer)
-            
+
         elif method == 'GET':
             await self._send_cors_stuff_2(writer)
             await self._handle_get_2(writer,url,args,request)
@@ -77,7 +77,7 @@ class HttpServer:
         else:
 
             await self._send_bad_req_2(writer)
-        
+
         print('Closing connection...')
         writer.close()
         await writer.wait_closed()
@@ -111,16 +111,16 @@ class HttpServer:
         print("Server stopped")
 
     def stop_server(self):
-        self._stop_flag = True 
+        self._stop_flag = True
         while self._stop_flag:
             time.sleep_ms(200)
 
     def _handle_conn(self,conn, addr):
         request = ""
         req_bytes = conn.recv(1024)
-        request = req_bytes.decode("utf-8") 
+        request = req_bytes.decode("utf-8")
         #print(request)
-        
+
         request_lines = request.split('\n')
 
         method = request_lines[0].split(' ')[0]
@@ -135,7 +135,7 @@ class HttpServer:
 
         if method == 'OPTIONS':
             self._send_cors_stuff(conn)
-            
+
         elif method == 'GET':
             self._send_cors_stuff(conn)
             self._handle_get(conn,url,args,request)
@@ -203,7 +203,7 @@ class HttpServer:
             conn.send('Content-Type: text/html\n')
             conn.send('Connection: close\n\n')
             conn.send(self._html_response)
-            
+
         elif url == '/state':
             # return tree state as json
             #print("get state")
@@ -225,7 +225,7 @@ class HttpServer:
             await writer.drain()
             writer.write(self._html_response)
             await writer.drain()
-            
+
         elif url == '/state':
             # return tree state as json
             #print("get state")
@@ -243,20 +243,20 @@ class HttpServer:
         #print("post set stuff")
         #conn.send('Content-Type: application/json\n\n')
         #conn.send('{"gott":"gott_me_kebab"}')
-        
+
         req_lines = request.split('\n')
         #print(req_lines)
         body = ""
         body_sep = '\r\n\r\n'
 
         if body_sep in request:
-            
+
             body_len = 0
             for lin in req_lines:
                 if 'Content-Length' in lin:
                     body_len = int(lin.split(':')[1])
-                    break 
-            
+                    break
+
             #print("Body len " + str(body_len))
 
 
@@ -266,12 +266,9 @@ class HttpServer:
             extra_rec = body_len - len(body)
             #print("Recieveing extra " + str(extra_rec))
             req_bytes = conn.recv(extra_rec)
-            body += req_bytes.decode("utf-8") 
+            body += req_bytes.decode("utf-8")
             #body = body.strip()
 
-
-
-      
         if len(body)>0 and False:
             print("Body")
             print(body)
@@ -282,7 +279,7 @@ class HttpServer:
         except:
             print("Failed to parse JSON from server")
             resp = {'status':'not gud'}
-        
+
         try:
             resp = self._post_callback(obj)
         except Exception as e:
@@ -291,44 +288,43 @@ class HttpServer:
             raise e
             resp = {'status':'gud'}
 
-
         resp_json = json.dumps(resp)
         print(resp_json)
 
         conn.send('Connection: close\n')
         conn.send('Content-Type: application/json\n\n')
-        
+
         conn.send(resp_json)
 
     async def _handle_post_2(self,writer: uasyncio.StreamWriter,url,args,request:str,reader:uasyncio.StreamReader):
         #print("post set stuff")
         #conn.send('Content-Type: application/json\n\n')
         #conn.send('{"gott":"gott_me_kebab"}')
-        
+
         req_lines = request.split('\n')
         #print(req_lines)
         body = ""
         body_sep = '\r\n\r\n'
 
         if body_sep in request:
-            
+
             body_len = 0
             for line in req_lines:
                 if 'Content-Length' in line:
                     body_len = int(line.split(':')[1])
-                    break 
-            
+                    break
+
             #print("Body len " + str(body_len))
 
             body = request.split(body_sep)[1]
 
             extra_rec = body_len - len(body)
-            print("Recieveing extra " + str(extra_rec))
+            # print("Recieveing extra " + str(extra_rec))
             if extra_rec > 0:
                 req_bytes: bytes = await reader.read(extra_rec)
                 body += req_bytes.decode("utf-8")
             #body = body.strip()
-      
+
         if len(body)>0 and False:
             print("Body")
             print(body)
@@ -339,7 +335,7 @@ class HttpServer:
         except:
             print("Failed to parse JSON from server")
             resp = {'status':'not gud'}
-        
+
         try:
             resp = self._post_callback(obj)
         except Exception as e:
@@ -356,7 +352,7 @@ class HttpServer:
         await writer.drain()
         writer.write('Content-Type: application/json\n\n')
         await writer.drain()
-        
+
         writer.write(resp_json)
         await writer.drain()
 

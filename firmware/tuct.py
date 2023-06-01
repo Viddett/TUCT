@@ -8,18 +8,18 @@ from machine import Pin
 from http_server import HttpServer, connect_wifi
 
 class Tuct:
-    
+
     def __init__(self) -> None:
         self.tree = tuct_leds.Tree(14,1,0,3,2)
         self.lightshow = lightshow.LightshowRunner(self.tree)
-        
+
         self.tree.b1.irq(trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING, handler=self.b1_callback)
-    
+
     def b1_callback(self, other) -> None:
         self.lightshow.switch_ls()
 
     def blink_all_leds(self, r):
-        
+
         led_ids = [(0,1),(2,3),(4,5),(6,7),(8,9),(10,11),(12,13)]
         rgbs = [(250,0,0),(0,250,0),(0,0,250)]
 
@@ -43,14 +43,10 @@ class Tuct:
         #obj = obj.replace('\n','')
         #print(type(obj))
         # obj = json.loads(obj)
-        # print(type(obj))
-        print(type(obj['leds'][0][0]))
         if type(obj['leds'][0][0]) == str:
             for i in range(len(obj['leds'])):
                 for j in range(len(obj['leds'][i])):
                     obj['leds'][i][j]= eval(obj['leds'][i][j])
-            # print(type(obj['leds'][0][0]))
-            # print(obj)
 
         self.lightshow.set_custom_ls(obj)
 
@@ -61,7 +57,7 @@ class Tuct:
         """
 
         return {"status":'glenn'}
-    
+
     async def run_lightshow(self):
         while True:
             self.lightshow.lightshow_step()
@@ -102,11 +98,11 @@ class Tuct:
         new_server = await uasyncio.start_server(self.server.socket_handler, '0.0.0.0', 80)
 
         self.blink_all_leds(2)
-        
+
         self.tree.set_all_leds(200,0,0,10)
 
         uasyncio.create_task(self.run_lightshow())
-        
+
         while True:
             await uasyncio.sleep(10)
 

@@ -13,7 +13,7 @@ class LightshowRunner:
 
         self.t0 = self._get_tick()
 
-        self.custom_ls = {    
+        self.custom_ls = {
             'time':[0.0,1.0,2.0],
             'leds':[
                 [RED,GREEN,RED],
@@ -32,7 +32,7 @@ class LightshowRunner:
                 [RED,GREEN,RED]
                 ]}
 
-    
+
     def _get_tick(self):
         return time.ticks_cpu()*1/1e6
 
@@ -40,8 +40,8 @@ class LightshowRunner:
 
     def lightshow_step(self):
         current_lightshow = self.get_current_ls()
-        
-        t = self._get_tick() - self.t0 
+
+        t = self._get_tick() - self.t0
 
         # If internal clock has overflow:n
         if t < 0 or t >= current_lightshow['time'][-1]:
@@ -60,8 +60,8 @@ class LightshowRunner:
         if self.ls_nr >= 4:
             self.ls_nr = 0
         else:
-            self.ls_nr += 1  
-        
+            self.ls_nr += 1
+
         self.t0 = self._get_tick()
 
     def get_current_ls(self):
@@ -69,7 +69,7 @@ class LightshowRunner:
         if self.ls_nr == 0:
             return LS0
         elif self.ls_nr == 1:
-            return LS1 
+            return LS1
         elif self.ls_nr == 2:
             return LS2
         elif self.ls_nr == 3:
@@ -80,14 +80,14 @@ class LightshowRunner:
             return {}
 
     def get_custom_ls(self):
-        return self.custom_ls 
+        return self.custom_ls
 
     def set_custom_ls(self, ls):
         ls_ok = self.light_show_dict_valid(ls)
         if ls_ok:
-            self.custom_ls = ls 
+            self.custom_ls = ls
             self.ls_nr = 4
-        return ls_ok 
+        return ls_ok
 
     def light_show_dict_valid(self,ls:dict):
 

@@ -32,10 +32,10 @@ class LedState:
 
 class Tree:
 
-    def __init__(self,nr_leds,clock_pin,data_pin,b1_pin=3,b2_pin=2):
+    def __init__(self,nr_leds: int,clock_pin,data_pin,b1_pin=3,b2_pin=2):
         self.clock_T_us = 15
         self.nr_leds = nr_leds
-        
+
         self.b1 = Pin(b1_pin,Pin.PULL_DOWN)
         self.b2 = Pin(b2_pin,Pin.PULL_DOWN)
 

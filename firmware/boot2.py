@@ -31,7 +31,7 @@ import tuct
 #     return {"status":'glenn'}
 
 # def b1_callback(obj):
-#     global LS 
+#     global LS
 #     LS.switch_ls()
 
 # r = (250,0,0)
@@ -60,7 +60,7 @@ import tuct
 
 # def blink_all_leds(r):
 #     global tree
-    
+
 #     led_ids = [(0,1),(2,3),(4,5),(6,7),(8,9),(10,11),(12,13)]
 #     rgbs = [(250,0,0),(0,250,0),(0,0,250)]
 
