@@ -1,6 +1,7 @@
 
 import time
 import tuct_leds
+from typing import Dict, List, Union, Tuple, Any
 
 
 class LightshowRunner:
@@ -13,7 +14,7 @@ class LightshowRunner:
 
         self.t0 = self._get_tick()
 
-        self.custom_ls = {
+        self.custom_ls: Dict[str, List[Any]] = {
             'time':[0.0,1.0,2.0],
             'leds':[
                 [RED,GREEN,RED],
@@ -32,11 +33,8 @@ class LightshowRunner:
                 [RED,GREEN,RED]
                 ]}
 
-
     def _get_tick(self):
         return time.ticks_cpu()*1/1e6
-
-
 
     def lightshow_step(self):
         current_lightshow = self.get_current_ls()
@@ -48,7 +46,7 @@ class LightshowRunner:
             self.t0 = self._get_tick()
             t = 0
 
-            # Interpolate each led's shedule
+        # Interpolate each led's shedule
         for i in range(self.tree.nr_leds):
 
             rgb = self._interp_leds(t,current_lightshow['time'],current_lightshow['leds'][i])
@@ -82,14 +80,14 @@ class LightshowRunner:
     def get_custom_ls(self):
         return self.custom_ls
 
-    def set_custom_ls(self, ls):
+    def set_custom_ls(self, ls: Dict[str,List[Any]]):
         ls_ok = self.light_show_dict_valid(ls)
         if ls_ok:
             self.custom_ls = ls
             self.ls_nr = 4
         return ls_ok
 
-    def light_show_dict_valid(self,ls:dict):
+    def light_show_dict_valid(self,ls:Dict[str,List[Any]]):
 
         ls_valid = True
 
@@ -108,7 +106,7 @@ class LightshowRunner:
 
         return ls_valid
 
-    def _interp_leds(self,t, time_vec, leds:list):
+    def _interp_leds(self,t, time_vec: List[float], leds:List[Union[List[int], Tuple[int,int,int]]]):
         # Interpolates the color for a single led
 
         assert abs(time_vec[0]) < 0.0001 # Time vec must start at 0
@@ -150,7 +148,7 @@ BLUE = (0,0,250)
 PURPLE = (250,0,250)
 YELLOW = (0,250,250)
 
-LS0 = {
+LS0: Dict[str, List[Any]] = {
 'time':[0.0,1.0,1.1,2.1,2.2],
 'leds':[
     [RED,RED,GREEN,GREEN,RED],
@@ -170,7 +168,7 @@ LS0 = {
     ]
 }
 
-LS1 = {
+LS1: Dict[str, List[Any]] = {
     'time':[0.0,1.0,1.1,2.1,2.2,3.2,3.3],
     'leds':[
         [RED,RED,GREEN,GREEN,BLUE,BLUE,RED],
@@ -190,7 +188,7 @@ LS1 = {
         ]
 }
 
-LS2 =  {
+LS2: Dict[str, List[Any]] =  {
     'time':[0.0, 1.0, 1.01, 2.1, 2.11, 3.2, 3.21],
     'leds':[
         [RED,RED,GREEN,GREEN,BLUE,BLUE,RED],#1
@@ -210,7 +208,7 @@ LS2 =  {
         ]
 }
 
-LS3 = {
+LS3: Dict[str, List[Any]] = {
     'time':[0.0, 1.0, 1.01, 2.1, 2.11, 3.2, 3.21],
     'leds':[
         [RED,RED,GREEN,GREEN,BLUE,BLUE,RED],#1

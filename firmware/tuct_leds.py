@@ -5,6 +5,7 @@ import random
 import micropython
 import gc
 import lightshow
+from typing import Tuple, List, Union
 
 class LedState:
 
@@ -15,24 +16,23 @@ class LedState:
         self._blue = 0
         self._intens = 5
 
-    def set_rgb(self,rgb):
+    def set_rgb(self,rgb: Union[Tuple[int,int,int],List[int]]):
         self._red = self.limit_val(rgb[0],255)
         self._green = self.limit_val(rgb[1],255)
         self._blue = self.limit_val(rgb[2],255)
 
-    def set_intens(self,i):
+    def set_intens(self,i:int):
         self._intens = self.limit_val(i,32)
 
-    def limit_val(self,x,max):
+    def limit_val(self,x:int,max:int):
         if x > max:
             x = max
         return x
 
 
-
 class Tree:
 
-    def __init__(self,nr_leds: int,clock_pin,data_pin,b1_pin=3,b2_pin=2):
+    def __init__(self,nr_leds: int,clock_pin:int,data_pin:int,b1_pin=3,b2_pin=2):
         self.clock_T_us = 15
         self.nr_leds = nr_leds
 
@@ -56,10 +56,9 @@ class Tree:
             time.sleep_us(self.clock_T_us)
             self.clock_pin.off()
 
-
         self.clock_pin.off()
 
-    def set_all_leds(self,r,g,b,inte):
+    def set_all_leds(self,r:int,g:int,b:int,inte:int):
         for led in self.leds:
             led.set_intens(inte)
             led.set_rgb((r,g,b))
