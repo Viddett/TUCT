@@ -44,6 +44,7 @@ class Tuct:
         #print(type(obj))
         # obj = json.loads(obj)
         if type(obj['leds'][0][0]) == str:
+            print('Str objects found...')
             for i in range(len(obj['leds'])):
                 for j in range(len(obj['leds'][i])):
                     obj['leds'][i][j]= eval(obj['leds'][i][j])
@@ -64,30 +65,6 @@ class Tuct:
             await uasyncio.sleep_ms(50)
 
     async def main(self):
-        r = (250,0,0)
-        g = (0,250,0)
-        b = (0,0,250)
-
-        _lightshow = {
-            'time':[0.0,1.0,1.1,2.1,2.2],
-            'leds':[
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r],
-                [r,r,g,g,r]
-                ]
-        }
-
         self.blink_all_leds(0)
 
         connect_wifi()
@@ -107,7 +84,5 @@ class Tuct:
             await uasyncio.sleep(10)
 
 if __name__ == '__main__':
-
     tuct_object = Tuct()
-
     uasyncio.run(tuct_object.main())
