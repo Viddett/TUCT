@@ -5,8 +5,6 @@ import json
 import index
 import uasyncio
 
-from typing import Dict, Callable
-
 try:
     import usocket as socket
 except:
@@ -37,7 +35,7 @@ def connect_wifi(timeout_s:int=9):
 
 class HttpServer:
 
-    def __init__(self, get_state_callback: Callable, post_callback: Callable):
+    def __init__(self, get_state_callback, post_callback):
         self._get_callback = get_state_callback
         self._post_callback = post_callback
         self._stop_flag = False
@@ -57,7 +55,7 @@ class HttpServer:
 
         method = request_lines[0].split(' ')[0]
         url = request_lines[0].split(' ')[1].strip()
-        args: Dict[str,str] = dict()
+        args = dict()
 
         for line in request_lines[1:]:
             line = line.strip()
@@ -217,11 +215,7 @@ class HttpServer:
             # Bad request
             self._send_bad_req(conn)
 
-    async def _handle_get_2(self,
-                            writer:uasyncio.StreamWriter,
-                            url:str,
-                            args:Dict[str,str],
-                            request:str):
+    async def _handle_get_2(self,writer: uasyncio.StreamWriter,url,args,request):
 
         if url == '/':
             # Default landing page
@@ -302,12 +296,7 @@ class HttpServer:
 
         conn.send(resp_json)
 
-    async def _handle_post_2(self,
-                             writer: uasyncio.StreamWriter,
-                             url:str,
-                             args:Dict[str,str],
-                             request:str,
-                             reader:uasyncio.StreamReader):
+    async def _handle_post_2(self,writer: uasyncio.StreamWriter,url,args,request:str,reader:uasyncio.StreamReader):
         #print("post set stuff")
         #conn.send('Content-Type: application/json\n\n')
         #conn.send('{"gott":"gott_me_kebab"}')
@@ -372,7 +361,6 @@ def get_callback():
     print("GET CALLBACK")
 
     return {"kebab_lvl":13337, "svarv_lvlv":10009009420, "rgb":"fett"}
-
 
 def post_callback(args):
     print("POST CALLBACK")

@@ -6,7 +6,6 @@ import json
 
 from machine import Pin
 from http_server import HttpServer, connect_wifi
-from typing import Dict, Any
 
 class Tuct:
 
@@ -19,7 +18,7 @@ class Tuct:
     def b1_callback(self, other) -> None:
         self.lightshow.switch_ls()
 
-    def blink_all_leds(self, r:int):
+    def blink_all_leds(self, r):
 
         led_ids = [(0,1),(2,3),(4,5),(6,7),(8,9),(10,11),(12,13)]
         rgbs = [(250,0,0),(0,250,0),(0,0,250)]
@@ -38,7 +37,7 @@ class Tuct:
         print("GET CALLBACK")
         return self.lightshow.get_current_ls()
 
-    def post_callback2(self, obj:Dict[Any,Any]):
+    def post_callback2(self, obj):
         print("POST CALLBACK")
         print(obj)
         #obj = obj.replace('\n','')
