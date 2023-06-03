@@ -1,10 +1,6 @@
 
 from machine import Pin
 import time
-import random
-import micropython
-import gc
-import lightshow
 
 class LedState:
 
@@ -27,7 +23,6 @@ class LedState:
         if x > max:
             x = max
         return x
-
 
 
 class Tree:
@@ -56,7 +51,6 @@ class Tree:
             time.sleep_us(self.clock_T_us)
             self.clock_pin.off()
 
-
         self.clock_pin.off()
 
     def set_all_leds(self,r,g,b,inte):
@@ -84,5 +78,3 @@ class Tree:
         self.clock_out_bytev2(0xff)
         self.clock_out_bytev2(0xff)
         self.clock_out_bytev2(0xff)
-
-

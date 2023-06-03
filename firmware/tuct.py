@@ -1,8 +1,12 @@
 import lightshow
 import tuct_leds
 import time
-import uasyncio
 import json
+
+try:
+    import uasyncio as asyncio
+except:
+    import asyncio
 
 from machine import Pin
 from http_server import HttpServer, connect_wifi
@@ -62,7 +66,7 @@ class Tuct:
     async def run_lightshow(self):
         while True:
             self.lightshow.lightshow_step()
-            await uasyncio.sleep_ms(50)
+            await asyncio.sleep_ms(50)
 
     async def main(self):
         self.blink_all_leds(0)
@@ -72,17 +76,18 @@ class Tuct:
         self.blink_all_leds(1)
 
         self.server = HttpServer(self.get_callback2, self.post_callback2)
-        new_server = await uasyncio.start_server(self.server.socket_handler, '0.0.0.0', 80)
+        new_server = await asyncio.start_server(self.server.socket_handler, '0.0.0.0', 80)
 
         self.blink_all_leds(2)
 
         self.tree.set_all_leds(200,0,0,10)
 
-        uasyncio.create_task(self.run_lightshow())
+        asyncio.create_task(self.run_lightshow())
 
         while True:
-            await uasyncio.sleep(10)
+            await asyncio.sleep(10)
+
 
 if __name__ == '__main__':
     tuct_object = Tuct()
-    uasyncio.run(tuct_object.main())
+    asyncio.run(tuct_object.main())

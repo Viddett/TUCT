@@ -3,7 +3,11 @@ import time,network
 import wifi_creds
 import json
 import index
-import uasyncio
+
+try:
+    import uasyncio as asyncio
+except:
+    import asyncio
 
 try:
     import usocket as socket
@@ -26,7 +30,6 @@ def connect_wifi(timeout_s:int=9):
 
     wlan.connect(wifi_creds.wifi_ssid, wifi_creds.wifi_pswd)
 
-
     wait_time = 0
     while not wlan.isconnected() and wlan.status() >= 0:
         print("Waiting to connect...")
@@ -48,7 +51,7 @@ class HttpServer:
 
         self._html_response = index.html
 
-    async def socket_handler(self, reader: uasyncio.StreamReader, writer: uasyncio.StreamWriter):
+    async def socket_handler(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         addr = writer.get_extra_info('peername')
         print(f'Got a connection from {addr}.')
 
@@ -79,7 +82,6 @@ class HttpServer:
             await self._handle_post_2(writer,url,args,request,reader)
 
         else:
-
             await self._send_bad_req_2(writer)
 
         print('Closing connection...')
@@ -87,7 +89,7 @@ class HttpServer:
         await writer.wait_closed()
         print('Connection closed.')
 
-    async def _send_bad_req_2(self,writer: uasyncio.StreamWriter):
+    async def _send_bad_req_2(self,writer: asyncio.StreamWriter):
             to_send = ['HTTP/1.1 400 Bad Request\n',
                        'Content-Type: text/html\n',
                        'Connection: close\n',
@@ -97,7 +99,7 @@ class HttpServer:
                 writer.write(line)
                 await writer.drain()
 
-    async def _handle_get_2(self,writer: uasyncio.StreamWriter,url:str,args,request):
+    async def _handle_get_2(self,writer: asyncio.StreamWriter,url:str,args,request):
         if url == '/':
             # Default landing page
             await self.write_response(writer,OK,TEXT_HTML,self._html_response)
@@ -110,7 +112,7 @@ class HttpServer:
             # Bad request
             await self._send_bad_req_2(writer)
 
-    async def _handle_post_2(self,writer: uasyncio.StreamWriter,url,args,request:str,reader:uasyncio.StreamReader):
+    async def _handle_post_2(self,writer: asyncio.StreamWriter,url,args,request:str,reader:asyncio.StreamReader):
         req_lines = request.split('\n')
         body = ""
         body_sep = '\r\n\r\n'
@@ -151,7 +153,7 @@ class HttpServer:
         await self.write_response(writer,CREATED,APPLICATION_JSON,resp_json)
 
     @staticmethod
-    async def write_response(writer: uasyncio.StreamWriter,code:str,content_type:str='',body:str=''):
+    async def write_response(writer: asyncio.StreamWriter,code:str,content_type:str='',body:str=''):
         to_send = [f'HTTP/1.1 {code}',
                     "Access-Control-Allow-Origin: *",
                     "Access-Control-Allow-Credentials : true",
@@ -352,9 +354,9 @@ glenn = 1
 
 async def start_all():
     server = HttpServer(get_callback,post_callback)
-    new_server = await uasyncio.start_server(server.socket_handler, '0.0.0.0', 80)
+    new_server = await asyncio.start_server(server.socket_handler, '0.0.0.0', 80)
     print("LEESGO")
-    loop = uasyncio.get_event_loop()
+    loop = asyncio.get_event_loop()
     loop.run_forever()
 
 if __name__ == '__main__':
@@ -362,7 +364,7 @@ if __name__ == '__main__':
     print("connecting to wifi")
     connect_wifi()
     print("starting server")
-    uasyncio.run(start_all())
+    asyncio.run(start_all())
     # server = HttpServer(get_callback,post_callback)
     # print("LEESGO")
     # server.start_server()

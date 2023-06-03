@@ -5,7 +5,7 @@ import tuct_leds
 
 class LightshowRunner:
 
-    self.tree:tuct_leds.Tree
+    tree:tuct_leds.Tree
 
     def __init__(self,tree:tuct_leds.Tree):
         self.tree = tree
@@ -32,11 +32,8 @@ class LightshowRunner:
                 [RED,GREEN,RED]
                 ]}
 
-
     def _get_tick(self):
         return time.ticks_cpu()*1/1e6
-
-
 
     def lightshow_step(self):
         current_lightshow = self.get_current_ls()
@@ -82,7 +79,7 @@ class LightshowRunner:
     def get_custom_ls(self):
         return self.custom_ls
 
-    def set_custom_ls(self, ls):
+    def set_custom_ls(self, ls:dict):
         ls_ok = self.light_show_dict_valid(ls)
         if ls_ok:
             self.custom_ls = ls
@@ -98,13 +95,12 @@ class LightshowRunner:
 
         ls_valid &= self.tree.nr_leds == nr_leds_in_ls
 
-        for i in range(len(ls['leds'])):
+        for led in ls['leds']:
 
             if not ls_valid:
                 break
 
-            led_i = ls['leds'][i]
-            ls_valid &= len(led_i) == nr_time_steps
+            ls_valid &= len(led) == nr_time_steps
 
         return ls_valid
 

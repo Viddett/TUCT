@@ -1,5 +1,9 @@
-import uasyncio
 import tuct
+
+try:
+    import uasyncio as asyncio
+except:
+    import asyncio
 
 # tree = tuct_leds.Tuct(14,1,0,3,2)
 
@@ -115,4 +119,4 @@ import tuct
 
 tuct_object = tuct.Tuct()
 
-uasyncio.run(tuct_object.main())
+asyncio.run(tuct_object.main())
