@@ -59,3 +59,83 @@ class TestClassServer:
         assert 'time' in  body.keys()
 
         assert lightshow == body
+
+    def test_post_bad_lightshow_more_time(self):
+        lightshow = {'time': [  0.0,  1.0,   1.1,   4.0, 4.1,   5,  5.1, 6.0],
+                     'leds': [[BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE]]}
+
+        response = req.post('http://' + ADRESS, data=json.dumps(lightshow), headers={'Content-type': 'application/json'})
+        assert response.status_code == 400
+
+    def test_post_bad_lightshow_less_time(self):
+        lightshow = {'time': [  0.0,  1.0,   1.1,   4.0, 4.1,   5],
+                     'leds': [[BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE]]}
+
+        response = req.post('http://' + ADRESS, data=json.dumps(lightshow), headers={'Content-type': 'application/json'})
+        assert response.status_code == 400
+
+    def test_post_bad_lightshow_to_many_leds(self):
+        lightshow = {'time': [  0.0,  1.0,   1.1,   4.0, 4.1,   5,  5.1],
+                     'leds': [[BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED, BLUE, BLUE]]}
+
+        response = req.post('http://' + ADRESS, data=json.dumps(lightshow), headers={'Content-type': 'application/json'})
+        assert response.status_code == 400
+
+    def test_post_bad_lightshow_to_few_leds(self):
+        lightshow = {'time': [  0.0,  1.0,   1.1,   4.0, 4.1,   5,  5.1],
+                     'leds': [[BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED],
+                              [BLUE, BLUE, GREEN, GREEN, RED, RED]]}
+
+        response = req.post('http://' + ADRESS, data=json.dumps(lightshow), headers={'Content-type': 'application/json'})
+        assert response.status_code == 400

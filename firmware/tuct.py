@@ -2,6 +2,7 @@ import lightshow
 import tuct_leds
 import time
 import json
+import index
 
 try:
     import uasyncio as asyncio
@@ -53,7 +54,7 @@ class Tuct:
                 for j in range(len(obj['leds'][i])):
                     obj['leds'][i][j]= eval(obj['leds'][i][j])
 
-        self.lightshow.set_custom_ls(obj)
+        success = self.lightshow.set_custom_ls(obj)
 
         """
         for ri in range(14):
@@ -61,7 +62,14 @@ class Tuct:
                 LIGHTSHOW['leds'][ri][ci] = obj['leds'][ri][ci]
         """
 
-        return {"status":'glenn'}
+        if success:
+            status = '201 Created'
+            response = {"status":'glenn'}
+        else:
+            status = '400 Bad request'
+            response = index.html_bad_request_invalid_lightshow
+
+        return status, response
 
     async def run_lightshow(self):
         while True:

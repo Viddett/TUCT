@@ -89,12 +89,12 @@ class HttpServer:
         await writer.wait_closed()
         print('Connection closed.')
 
-    async def _send_bad_req_2(self,writer: asyncio.StreamWriter):
+    async def _send_bad_req_2(self,writer: asyncio.StreamWriter,body=index.html_bad_request):
             to_send = ['HTTP/1.1 400 Bad Request\n',
                        'Content-Type: text/html\n',
                        'Connection: close\n',
                        '\n',
-                       index.html_bad_request]
+                       body]
             for line in to_send:
                 writer.write(line)
                 await writer.drain()
@@ -141,16 +141,21 @@ class HttpServer:
             resp = {'status':'not gud'}
 
         try:
-            resp = self._post_callback(obj)
+            status, resp = self._post_callback(obj)
         except Exception as e:
             print("Failed to run post callback")
             print(e)
-            raise e
+            await self._send_bad_req_2(writer)
+            return
+            # raise e
             resp = {'status':'gud'}
 
-        resp_json = json.dumps(resp)
+        if status == CREATED:
+            resp_json = json.dumps(resp)
+            await self.write_response(writer,CREATED,APPLICATION_JSON,resp_json)
+        elif status == BAD_REQUEST:
+            await self._send_bad_req_2(writer, resp)
 
-        await self.write_response(writer,CREATED,APPLICATION_JSON,resp_json)
 
     @staticmethod
     async def write_response(writer: asyncio.StreamWriter,code:str,content_type:str='',body:str=''):
