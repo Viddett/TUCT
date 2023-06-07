@@ -21,7 +21,7 @@ BAD_REQUEST = '400 Bad request'
 CREATED = '201 Created'
 
 
-def connect_wifi(timeout_s:int=9):
+async def connect_wifi(timeout_s:int=9):
 
     wlan = network.WLAN(network.STA_IF) #initialize the wlan object
     wlan.active(True)
@@ -33,7 +33,7 @@ def connect_wifi(timeout_s:int=9):
     wait_time = 0
     while not wlan.isconnected() and wlan.status() >= 0:
         print("Waiting to connect...")
-        time.sleep(1)
+        await asyncio.sleep(1)
         wait_time += 1
 
         if wait_time > timeout_s:
@@ -358,6 +358,9 @@ def post_callback(args):
 glenn = 1
 
 async def start_all():
+    print("connecting to wifi")
+    await connect_wifi()
+    print("starting server")
     server = HttpServer(get_callback,post_callback)
     new_server = await asyncio.start_server(server.socket_handler, '0.0.0.0', 80)
     print("LEESGO")
@@ -366,9 +369,6 @@ async def start_all():
 
 if __name__ == '__main__':
 
-    print("connecting to wifi")
-    connect_wifi()
-    print("starting server")
     asyncio.run(start_all())
     # server = HttpServer(get_callback,post_callback)
     # print("LEESGO")
