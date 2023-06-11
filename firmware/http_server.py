@@ -3,6 +3,7 @@ import time,network
 import wifi_creds
 import json
 import index
+import re
 
 try:
     import uasyncio as asyncio
@@ -44,6 +45,9 @@ async def connect_wifi(timeout_s:int=9):
 
 class HttpServer:
 
+    reader: asyncio.StreamReader
+    writer: asyncio.StreamWriter
+
     def __init__(self, get_state_callback, post_callback):
         self._get_callback = get_state_callback
         self._post_callback = post_callback
@@ -52,6 +56,8 @@ class HttpServer:
         self._html_response = index.html
 
     async def socket_handler(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+        self.reader = reader
+        self.writer = writer
         addr = writer.get_extra_info('peername')
         print(f'Got a connection from {addr}.')
 
@@ -73,46 +79,36 @@ class HttpServer:
                 args[parts[0]] = parts[1]
 
         if method == 'OPTIONS':
-            await self.write_response(writer,OK)
+            await self.write_response(OK)
 
         elif method == 'GET':
-            await self._handle_get_2(writer,url,args,request)
+            await self._handle_get_2(url,args,request)
 
         elif method == 'POST':
-            await self._handle_post_2(writer,url,args,request,reader)
+            await self._handle_post_2(url,args,request)
 
         else:
-            await self._send_bad_req_2(writer)
+            await self.write_response(BAD_REQUEST,TEXT_HTML,index.html_bad_request)
 
         print('Closing connection...')
         writer.close()
         await writer.wait_closed()
         print('Connection closed.')
 
-    async def _send_bad_req_2(self,writer: asyncio.StreamWriter,body=index.html_bad_request):
-            to_send = ['HTTP/1.1 400 Bad Request\n',
-                       'Content-Type: text/html\n',
-                       'Connection: close\n',
-                       '\n',
-                       body]
-            for line in to_send:
-                writer.write(line)
-                await writer.drain()
-
-    async def _handle_get_2(self,writer: asyncio.StreamWriter,url:str,args,request):
+    async def _handle_get_2(self,url:str,args,request):
         if url == '/':
             # Default landing page
-            await self.write_response(writer,OK,TEXT_HTML,self._html_response)
+            await self.write_response(OK,TEXT_HTML,self._html_response)
         elif url == '/state':
             # return tree state as json
             state = self._get_callback()
             state_json = json.dumps(state)
-            await self.write_response(writer,OK,APPLICATION_JSON,state_json)
+            await self.write_response(OK,APPLICATION_JSON,state_json)
         else:
             # Bad request
-            await self._send_bad_req_2(writer)
+            await self.write_response(BAD_REQUEST,TEXT_HTML,index.html_bad_request)
 
-    async def _handle_post_2(self,writer: asyncio.StreamWriter,url,args,request:str,reader:asyncio.StreamReader):
+    async def _handle_post_2(self,url,args,request:str):
         req_lines = request.split('\n')
         body = ""
         body_sep = '\r\n\r\n'
@@ -129,7 +125,7 @@ class HttpServer:
 
             extra_rec = body_len - len(body)
             if extra_rec > 0:
-                req_bytes: bytes = await reader.read(extra_rec)
+                req_bytes: bytes = await self.reader.read(extra_rec)
                 body += req_bytes.decode("utf-8")
 
         obj = {}
@@ -141,41 +137,40 @@ class HttpServer:
             resp = {'status':'not gud'}
 
         try:
-            status, resp = self._post_callback(obj)
+            status, resp, content_type = self._post_callback(obj)
         except Exception as e:
             print("Failed to run post callback")
             print(e)
-            await self._send_bad_req_2(writer)
+            await self.write_response(BAD_REQUEST,TEXT_HTML,index.html_bad_request)
             return
             # raise e
-            resp = {'status':'gud'}
+            # resp = {'status':'gud'}
 
-        if status == CREATED:
-            resp_json = json.dumps(resp)
-            await self.write_response(writer,CREATED,APPLICATION_JSON,resp_json)
-        elif status == BAD_REQUEST:
-            await self._send_bad_req_2(writer, resp)
+        await self.write_response(status,content_type,resp)
 
 
-    @staticmethod
-    async def write_response(writer: asyncio.StreamWriter,code:str,content_type:str='',body:str=''):
-        to_send = [f'HTTP/1.1 {code}',
-                    "Access-Control-Allow-Origin: *",
+    async def write_response(self,code:str,content_type:str='',body:str=''):
+        to_send = [f'HTTP/1.1 {code}']
+        header = ["Access-Control-Allow-Origin: *",
                     "Access-Control-Allow-Credentials : true",
                     "Access-Control-Allow-Methods : GET,HEAD,OPTIONS,POST,PUT",
-                    "Access-Control-Allow-Headers:Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers",
-                    'Connection: close']
+                    "Access-Control-Allow-Headers:Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"]
+
+        if code in [OK, CREATED]:
+            to_send.extend(header)
 
         if content_type != '':
             to_send.append(f'Content-Type: {content_type}')
+
+        to_send.append('Connection: close')
 
         if body != '':
             to_send.append('')
             to_send.append(body)
 
         for message in to_send:
-            writer.write(message + '\n')
-            await writer.drain()
+            self.writer.write(message + '\n')
+            await self.writer.drain()
 
 # Start of first solution
 # TODO Decide if remove
@@ -353,7 +348,7 @@ def post_callback(args):
     print("POST CALLBACK")
     print(args)
 
-    return {"status":'glenn'}
+    return json.dumps({"status":'glenn'})
 
 glenn = 1
 

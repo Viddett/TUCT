@@ -65,12 +65,14 @@ class Tuct:
 
         if success:
             status = '201 Created'
-            response = {"status":'glenn'}
+            response = json.dumps({"status":'glenn'})
+            content_type = 'application/json'
         else:
             status = '400 Bad request'
             response = index.html_bad_request_invalid_lightshow
+            content_type = 'text/html'
 
-        return status, response
+        return status, response, content_type
 
     async def run_lightshow(self):
         while True:
