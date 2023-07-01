@@ -80,7 +80,7 @@ class Tuct:
     async def run_lightshow(self):
         while True:
             self.lightshow.lightshow_step()
-            await asyncio.sleep_ms(50)
+            await asyncio.sleep_ms(20)
 
     async def main(self):
         self.blink_all_leds(0)
