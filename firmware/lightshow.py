@@ -50,6 +50,7 @@ class LightshowRunner:
 
             rgb = self._interp_leds(t,current_lightshow['time'],current_lightshow['leds'][i])
             self.tree.leds[i].set_rgb(rgb)
+            self.tree.leds[i].set_intens(1)
 
         self.tree.update_tree()
 
