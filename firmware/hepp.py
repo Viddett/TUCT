@@ -1,5 +1,5 @@
 
-import json 
+import json
 
 r = (250,0,0)
 g = (0,250,0)

@@ -1,5 +1,5 @@
 import tuct_leds
-import time 
+import time
 from machine import Pin
 
 print("hej")
