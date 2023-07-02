@@ -2,6 +2,7 @@ import lightshow
 import tuct_leds
 import time
 import json
+import index
 
 try:
     import uasyncio as asyncio
@@ -18,6 +19,7 @@ class Tuct:
         self.lightshow = lightshow.LightshowRunner(self.tree)
 
         self.tree.b1.irq(trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING, handler=self.b1_callback)
+        self.wifi_connected = False
 
     def b1_callback(self, other) -> None:
         self.lightshow.switch_ls()
@@ -53,7 +55,7 @@ class Tuct:
                 for j in range(len(obj['leds'][i])):
                     obj['leds'][i][j]= eval(obj['leds'][i][j])
 
-        self.lightshow.set_custom_ls(obj)
+        success = self.lightshow.set_custom_ls(obj)
 
         """
         for ri in range(14):
@@ -61,17 +63,40 @@ class Tuct:
                 LIGHTSHOW['leds'][ri][ci] = obj['leds'][ri][ci]
         """
 
-        return {"status":'glenn'}
+        if success:
+            status = '201 Created'
+            response = json.dumps({"status":'glenn'})
+            content_type = 'application/json'
+        else:
+            status = '400 Bad request'
+            response = index.html_bad_request_invalid_lightshow
+            content_type = 'text/html'
+
+        return status, response, content_type
 
     async def run_lightshow(self):
         while True:
             self.lightshow.lightshow_step()
             await asyncio.sleep_ms(50)
 
+    async def blink_last_led(self):
+        while not self.wifi_connected:
+            self.tree.leds[12].set_intens(1)
+            self.tree.leds[12].set_rgb((250,0,0))
+            self.tree.leds[13].set_intens(1)
+            self.tree.leds[13].set_rgb((250,0,0))
+            self.tree.update_tree()
+            await asyncio.sleep_ms(500)
+            self.tree.set_all_leds(0,0,0,0)
+            self.tree.update_tree()
+            await asyncio.sleep_ms(500)
+
     async def main(self):
         self.blink_all_leds(0)
 
-        connect_wifi()
+        asyncio.create_task(self.blink_last_led())
+        await connect_wifi()
+        self.wifi_connected = True
 
         self.blink_all_leds(1)
 
