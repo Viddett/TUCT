@@ -40,15 +40,29 @@ class Tuct:
             time.sleep_ms(50)
 
     def get_callback2(self):
+        # SHould not be used...
         print("GET CALLBACK")
+        print(self.lightshow.get_current_ls())
+        print("*****")
         return self.lightshow.get_current_ls()
 
     def post_callback2(self, obj):
         print("POST CALLBACK")
+        obj = json.loads(obj)
         print(obj)
-        #obj = obj.replace('\n','')
-        #print(type(obj))
-        # obj = json.loads(obj)
+        print(type(obj))
+
+        if obj['request'] == 'return_custom_ls':
+            return {'custom_ls':self.lightshow.custom_ls}
+        elif obj['request'] == 'set_custom_ls':
+            ls_obj = json.loads(obj['lightshow'])
+            self.lightshow.set_custom_ls(ls_obj)
+            return {'custom_ls_status':'ok'}
+        else:
+            return {'status':'bad request'}
+
+
+        print(type(obj))
         if type(obj['leds'][0][0]) == str:
             print('Str objects found...')
             for i in range(len(obj['leds'])):
@@ -77,7 +91,7 @@ class Tuct:
     async def run_lightshow(self):
         while True:
             self.lightshow.lightshow_step()
-            await asyncio.sleep_ms(50)
+            await asyncio.sleep_ms(20)
 
     async def blink_last_led(self):
         while not self.wifi_connected:

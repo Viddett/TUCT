@@ -92,10 +92,15 @@
 
         var req = create_LS_str();
 
+        Dictionary<String, String> req_dict = new Dictionary<string, string>();
 
+        req_dict.Add("request", "set_custom_ls");
+        req_dict.Add("lightshow", req);
+
+        string req_json = JsonSerializer.Serialize(req_dict);
 
         //string req_json = JsonSerializer.Serialize(req);
-        var state = await JS.InvokeAsync<string>("set_tree_status2", "192.168.1.96", req); //127.0.0.1:5000
+        var state = await JS.InvokeAsync<string>("set_tree_status2", "192.168.1.96", req_json); //127.0.0.1:5000
         System.Diagnostics.Debug.Print("TREE STATE");
 
         System.Diagnostics.Debug.Print(state);
