@@ -40,8 +40,6 @@ class Tuct:
     def get_callback2(self):
         # SHould not be used...
         print("GET CALLBACK")
-        print(self.lightshow.get_current_ls())
-        print("*****")
         return self.lightshow.get_current_ls()
 
     def post_callback2(self, obj):
@@ -52,30 +50,19 @@ class Tuct:
 
         if obj['request'] == 'return_custom_ls':
             return {'custom_ls':self.lightshow.custom_ls}
+
+
         elif obj['request'] == 'set_custom_ls':
             ls_obj = json.loads(obj['lightshow'])
             self.lightshow.set_custom_ls(ls_obj)
             return {'custom_ls_status':'ok'}
+
+
+        elif obj['request'] == 'search':
+            return {'tree':'ok'}
+
         else:
             return {'status':'bad request'}
-
-
-        print(type(obj))
-        if type(obj['leds'][0][0]) == str:
-            print('Str objects found...')
-            for i in range(len(obj['leds'])):
-                for j in range(len(obj['leds'][i])):
-                    obj['leds'][i][j]= eval(obj['leds'][i][j])
-
-        self.lightshow.set_custom_ls(obj)
-
-        """
-        for ri in range(14):
-            for ci in range(5):
-                LIGHTSHOW['leds'][ri][ci] = obj['leds'][ri][ci]
-        """
-
-        return {"status":'glenn'}
 
     async def run_lightshow(self):
         while True:

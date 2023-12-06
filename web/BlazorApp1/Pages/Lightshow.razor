@@ -8,7 +8,12 @@
 
 @inject IJSRuntime JS
 
-<h3>lightshow</h3>
+<h3>Lightshow</h3>
+
+<h4>IP address of tree</h4>
+<input type="text" @bind="@field_txt" />
+
+<br />
 
 <button class="btn btn-primary" @onclick=btn_open_lightshow>Open lightshow</button>
 <button class="btn btn-primary" @onclick=btn_save_lightshow>Save lightshow</button>
@@ -31,6 +36,7 @@
     LED[,] leds;
     bool leds_initated;
 
+    string field_txt;
 
     protected override async Task OnInitializedAsync()
     {
