@@ -1,13 +1,15 @@
-const btn = document.querySelector('.btn')
+const btnPalette = document.querySelector('.btn-palette')
+const btnNextProg = document.querySelector('.btn-next-prog')
+const btnStartStop = document.querySelector('.btn-start-stop')
 
-var colorArray = ['#FF0000', '#00FF00', '#0000FF']
-var colorCounter = 0
+btnPalette.addEventListener('click', () => { 
+    alert("Clicked palette button")
+});
 
-btn.addEventListener('click', () => { 
-    colorCounter++
-    if (colorCounter >= colorArray.length) {
-        colorCounter = 0
-    }
-    //btn.style.backgroundColor = colorArray[colorCounter]
-    //btn.style.boxShadow = '0 0 20px' + colorArray[colorCounter]
+btnNextProg.addEventListener('click', () => { 
+    alert("Clicked next program button")
+});
+
+btnStartStop.addEventListener('click', () => { 
+    alert("Clicked start stop button")
 });
