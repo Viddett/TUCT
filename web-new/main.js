@@ -1,15 +1,15 @@
-const btnPalette = document.querySelector('.btn-palette')
-const btnNextProg = document.querySelector('.btn-next-prog')
-const btnStartStop = document.querySelector('.btn-start-stop')
+const BtnPalette = document.querySelector('.btn-palette')
+const BtnNextProg = document.querySelector('.btn-next-prog')
+const BtnStartStop = document.querySelector('.btn-start-stop')
 
-btnPalette.addEventListener('click', () => { 
+BtnPalette.addEventListener('click', () => { 
     alert("Clicked palette button")
 });
 
-btnNextProg.addEventListener('click', () => { 
+BtnNextProg.addEventListener('click', () => { 
     alert("Clicked next program button")
 });
 
-btnStartStop.addEventListener('click', () => { 
+BtnStartStop.addEventListener('click', () => { 
     alert("Clicked start stop button")
 });
