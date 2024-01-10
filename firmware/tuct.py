@@ -10,7 +10,7 @@ except:
     import asyncio
 
 from machine import Pin
-from http_server import HttpServer, connect_wifi
+import http_server as server
 
 class Tuct:
 
@@ -42,8 +42,6 @@ class Tuct:
     def get_callback2(self):
         # SHould not be used...
         print("GET CALLBACK")
-        print(self.lightshow.get_current_ls())
-        print("*****")
         return self.lightshow.get_current_ls()
 
     def post_callback2(self, obj):
@@ -54,28 +52,18 @@ class Tuct:
 
         if obj['request'] == 'return_custom_ls':
             return {'custom_ls':self.lightshow.custom_ls}
+
+
         elif obj['request'] == 'set_custom_ls':
             ls_obj = json.loads(obj['lightshow'])
             self.lightshow.set_custom_ls(ls_obj)
             return {'custom_ls_status':'ok'}
-        else:
-            return {'status':'bad request'}
-
-
-        print(type(obj))
-        if type(obj['leds'][0][0]) == str:
-            print('Str objects found...')
-            for i in range(len(obj['leds'])):
-                for j in range(len(obj['leds'][i])):
-                    obj['leds'][i][j]= eval(obj['leds'][i][j])
 
         success = self.lightshow.set_custom_ls(obj)
 
-        """
-        for ri in range(14):
-            for ci in range(5):
-                LIGHTSHOW['leds'][ri][ci] = obj['leds'][ri][ci]
-        """
+
+        elif obj['request'] == 'search':
+            return {'tree':'ok'}
 
         if success:
             status = '201 Created'
@@ -87,6 +75,7 @@ class Tuct:
             content_type = 'text/html'
 
         return status, response, content_type
+
 
     async def run_lightshow(self):
         while True:
@@ -109,23 +98,24 @@ class Tuct:
         self.blink_all_leds(0)
 
         asyncio.create_task(self.blink_last_led())
-        await connect_wifi()
+        await server.start_wifi()
         self.wifi_connected = True
 
         self.blink_all_leds(1)
-
-        self.server = HttpServer(self.get_callback2, self.post_callback2)
+        
+        print("Starting server")
+        self.server = server.HttpServer(self.get_callback2, self.post_callback2)
         new_server = await asyncio.start_server(self.server.socket_handler, '0.0.0.0', 80)
 
+        print("lesgo")
         self.blink_all_leds(2)
 
         self.tree.set_all_leds(200,0,0,10)
 
         asyncio.create_task(self.run_lightshow())
 
-        while True:
-            await asyncio.sleep(10)
-
+        loop = asyncio.get_event_loop()
+        loop.run_forever()
 
 if __name__ == '__main__':
     tuct_object = Tuct()
