@@ -4,8 +4,6 @@ import wifi_creds
 import json
 import index
 import re
-import gc
-import os
 
 try:
     import uasyncio as asyncio
@@ -120,13 +118,14 @@ class HttpServer:
             print("**********" + full_url + "**********")
             if '.svg' in url:
                 content_type = 'image/svg+xml'
-                # with open(full_url, 'rb') as file:
-                #     contents = file.read()
+                with open(full_url, 'rb') as file:
+                    contents = file.read()
             elif '.jpg' in url:
                 # Too big to transfer atm...
-                gc.collect()
                 content_type = 'image/jpeg'
-            await self.write_response(writer,OK,content_type,full_url,True)
+                with open(full_url, 'rb') as file:
+                    contents = file.read()
+            await self.write_response(writer,OK,content_type,contents,True)
         # elif '.mp3' in url:
         #     content_type = 'audio/mpeg'
         #     with open("web-new" + url, 'rb') as file:
@@ -205,19 +204,8 @@ class HttpServer:
             await writer.drain()
 
         if binary:
-            await self.write_binary_file(writer,body)
-            # writer.write(body)
-            # await writer.drain()
-
-    async def write_binary_file(self,writer:asyncio.StreamWriter,file_path:str):
-        with open(file_path, 'rb') as file:
-            while True: # len(content) > 0:
-                content = file.read(4096)
-                if len(content) < 1:
-                    break
-                writer.write(content)
-                await writer.drain()
-
+            writer.write(body)
+            await writer.drain()
 
 
 

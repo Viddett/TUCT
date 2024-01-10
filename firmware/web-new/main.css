@@ -3,7 +3,7 @@ body {
     color: white;
     text-align: center;
     background-color: #000e06;
-    background-image: url(assets/christmas_trees_bg.jpg);
+    /* background-image: url(assets/christmas_trees_bg.jpg); */
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
