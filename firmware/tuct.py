@@ -9,7 +9,7 @@ except:
     import asyncio
 
 from machine import Pin
-from http_server import HttpServer, connect_wifi
+import http_server as server
 
 class Tuct:
 
@@ -72,22 +72,23 @@ class Tuct:
     async def main(self):
         self.blink_all_leds(0)
 
-        connect_wifi()
-
         self.blink_all_leds(1)
 
-        self.server = HttpServer(self.get_callback2, self.post_callback2)
+        print("Starting wifi")
+        server.start_wifi()
+        print("Starting server")
+        self.server = server.HttpServer(self.get_callback2, self.post_callback2)
         new_server = await asyncio.start_server(self.server.socket_handler, '0.0.0.0', 80)
 
+        print("lesgo")
         self.blink_all_leds(2)
 
         self.tree.set_all_leds(200,0,0,10)
 
         asyncio.create_task(self.run_lightshow())
 
-        while True:
-            await asyncio.sleep(10)
-
+        loop = asyncio.get_event_loop()
+        loop.run_forever()
 
 if __name__ == '__main__':
     tuct_object = Tuct()

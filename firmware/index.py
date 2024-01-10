@@ -18,7 +18,6 @@ html = """
         <h1>Coolt att denna hemsidan körs på en pico</h1>
         <p>Gött me kebab</p>
         <a href="https://youtu.be/dQw4w9WgXcQ">Pico SDK</a><br>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/giU5sSwf6sU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
         </body>
