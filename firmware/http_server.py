@@ -91,7 +91,7 @@ class HttpServer:
         else:
             await self.write_response(writer,BAD_REQUEST,TEXT_HTML,index.html_bad_request)
 
-        print('Closing connection...')
+        print('Closing connection... ' + url)
         writer.close()
         await writer.wait_closed()
         print('Connection closed.')
@@ -119,13 +119,13 @@ class HttpServer:
             full_url = url
             print("**********" + full_url + "**********")
             if '.svg' in url:
-                content_type = 'image/svg+xml'
+                content_type = 'image/svg+xml; charset=utf-8'
                 # with open(full_url, 'rb') as file:
                 #     contents = file.read()
             elif '.jpg' in url:
                 # Too big to transfer atm...
                 gc.collect()
-                content_type = 'image/jpeg'
+                content_type = 'image/jpeg; charset=utf-8'
             await self.write_response(writer,OK,content_type,full_url,True)
         # elif '.mp3' in url:
         #     content_type = 'audio/mpeg'
@@ -204,16 +204,20 @@ class HttpServer:
             await writer.drain()
 
         if binary:
+            file_stats = os.stat(body)
+            content_length = file_stats[6]
+            writer.write(f"Content-Length: {content_length}\n\n")
+            await writer.drain()
             await self.write_binary_file(writer,body)
-            # writer.write(body)
-            # await writer.drain()
 
     async def write_binary_file(self,writer:asyncio.StreamWriter,file_path:str):
         with open(file_path, 'rb') as file:
-            while True: # len(content) > 0:
+            done = False
+            while not done: # len(content) > 0:
                 content = file.read(4096)
                 if len(content) < 1:
-                    break
+                    content = "\r\n"
+                    done = True
                 writer.write(content)
                 await writer.drain()
 
