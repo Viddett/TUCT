@@ -46,3 +46,25 @@ html_bad_request = """
         </body>
         </html>
 """
+html_bad_request_invalid_lightshow = """
+<!DOCTYPE html>
+        <html>
+
+        <header>
+        <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
+        <style>
+        body {background-color: rgb(243, 108, 84);
+                font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;}
+        h1   {color: red;}
+        p    {color: red;}
+        </style>
+        </header>
+
+        <body>
+
+        <h1>400 Bad request</h1>
+        <p>Invalid lightshow.</p>
+
+        </body>
+        </html>
+"""

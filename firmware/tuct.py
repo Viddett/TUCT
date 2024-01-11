@@ -2,6 +2,7 @@ import lightshow
 import tuct_leds
 import time
 import json
+import index
 
 try:
     import uasyncio as asyncio
@@ -18,6 +19,7 @@ class Tuct:
         self.lightshow = lightshow.LightshowRunner(self.tree)
 
         self.tree.b1.irq(trigger=Pin.IRQ_FALLING | Pin.IRQ_RISING, handler=self.b1_callback)
+        self.wifi_connected = False
 
     def b1_callback(self, other) -> None:
         self.lightshow.switch_ls()
@@ -57,25 +59,50 @@ class Tuct:
             self.lightshow.set_custom_ls(ls_obj)
             return {'custom_ls_status':'ok'}
 
+        success = self.lightshow.set_custom_ls(obj)
+
 
         elif obj['request'] == 'search':
             return {'tree':'ok'}
 
+        if success:
+            status = '201 Created'
+            response = json.dumps({"status":'glenn'})
+            content_type = 'application/json'
         else:
-            return {'status':'bad request'}
+            status = '400 Bad request'
+            response = index.html_bad_request_invalid_lightshow
+            content_type = 'text/html'
+
+        return status, response, content_type
+
 
     async def run_lightshow(self):
         while True:
             self.lightshow.lightshow_step()
             await asyncio.sleep_ms(20)
 
+    async def blink_last_led(self):
+        while not self.wifi_connected:
+            self.tree.leds[12].set_intens(1)
+            self.tree.leds[12].set_rgb((250,0,0))
+            self.tree.leds[13].set_intens(1)
+            self.tree.leds[13].set_rgb((250,0,0))
+            self.tree.update_tree()
+            await asyncio.sleep_ms(500)
+            self.tree.set_all_leds(0,0,0,0)
+            self.tree.update_tree()
+            await asyncio.sleep_ms(500)
+
     async def main(self):
         self.blink_all_leds(0)
 
-        self.blink_all_leds(1)
+        asyncio.create_task(self.blink_last_led())
+        await server.start_wifi()
+        self.wifi_connected = True
 
-        print("Starting wifi")
-        server.start_wifi()
+        self.blink_all_leds(1)
+        
         print("Starting server")
         self.server = server.HttpServer(self.get_callback2, self.post_callback2)
         new_server = await asyncio.start_server(self.server.socket_handler, '0.0.0.0', 80)

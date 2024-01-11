@@ -1,0 +1,59 @@
+body {
+    font-family: system-ui;
+    color: white;
+    text-align: center;
+    background-color: #000e06;
+    background-image: url(assets/christmas_trees_bg.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .btn {
+    filter: drop-shadow(5px 5px 8px black);
+    position: fixed;
+    display: inline-block;
+    cursor: pointer;
+    border: none;
+  }
+  .btn:active {
+    filter: none;
+  }
+
+  .btn-palette {
+    background: url(assets/palette-icon.svg) center no-repeat;
+    background-size: contain;
+    height: 200px; width: 200px;
+    left: 40%; top: 10%;
+  } .btn-palette:active {
+    background: url(assets/palette-icon-pressed.svg) center no-repeat;
+    background-size: contain;
+  }
+
+  .btn-next-prog {
+    background: url(assets/next-prog-icon.svg) center no-repeat;
+    background-size: contain;
+    height: 200px; width: 200px;
+    left: 30%; top: 30%;
+  } .btn-next-prog:active {
+    background: url(assets/next-prog-icon-pressed.svg) center no-repeat;
+    background-size: contain;
+  }
+
+  .btn-start-stop {
+    background: url(assets/start-stop-icon.svg) center no-repeat;
+    background-size: contain;
+    height: 200px; width: 200px;
+    left: 20%; top: 50%;
+  } .btn-start-stop:active {
+    background: url(assets/start-stop-icon-pressed.svg) center no-repeat;
+    background-size: contain;
+  }
+
+  .audio-container {
+    position: fixed;
+    bottom: 3%;
+    scale: 1.5;
+    left: 10%;
+  }
+  audio {width: 300px; display: block;}

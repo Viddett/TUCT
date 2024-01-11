@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   fill="#000000"
+   width="650"
+   height="650"
+   viewBox="0 0 416 416"
+   version="1.1"
+   id="svg54874"
+   sodipodi:docname="start-stop-icon.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs54878">
+    <filter
+       style="color-interpolation-filters:sRGB"
+       inkscape:label="Drop Shadow"
+       id="filter5962"
+       x="-0.015886229"
+       y="-0.015886229"
+       width="1.0500417"
+       height="1.0456264">
+      <feFlood
+         flood-opacity="0.835294"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood5952" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="out"
+         result="composite1"
+         id="feComposite5954" />
+      <feGaussianBlur
+         in="composite1"
+         stdDeviation="2.7536131"
+         result="blur"
+         id="feGaussianBlur5956" />
+      <feOffset
+         dx="7.6"
+         dy="5.76324"
+         result="offset"
+         id="feOffset5958" />
+      <feComposite
+         in="offset"
+         in2="SourceGraphic"
+         operator="atop"
+         result="composite2"
+         id="feComposite5960" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="namedview54876"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="1.28375"
+     inkscape:cx="329.50341"
+     inkscape:cy="330.67186"
+     inkscape:window-width="1888"
+     inkscape:window-height="1252"
+     inkscape:window-x="479"
+     inkscape:window-y="65"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg54874" />
+  <title
+     id="title54870">ionicons-v5-c</title>
+  <path
+     d="M 208,0 C 93.31,0 0,93.31 0,208 0,322.69 93.31,416 208,416 322.69,416 416,322.69 416,208 416,93.31 322.69,0 208,0 Z m 80,272 a 16,16 0 0 1 -32,0 V 219 L 144.32,286.44 A 10.78,10.78 0 0 1 128,277.13 V 138.87 a 10.78,10.78 0 0 1 16.32,-9.31 L 256,197 v -53 a 16,16 0 0 1 32,0 z"
+     id="path54872"
+     style="fill:#e8e8e8;fill-opacity:1" />
+  <metadata
+     id="metadata59404">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>ionicons-v5-c</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>
