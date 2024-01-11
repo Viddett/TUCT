@@ -176,7 +176,6 @@ class HttpServer:
 
         await self.write_response(writer,status,content_type,resp)
 
-
     async def write_response(self,writer:asyncio.StreamWriter,code:str,content_type:str='',body:str='',binary=False,disposition=False):
         to_send = [f'HTTP/1.1 {code}']
         header = ["Access-Control-Allow-Origin: *",
@@ -217,8 +216,6 @@ class HttpServer:
                     break
                 writer.write(content)
                 await writer.drain()
-
-
 
 
 def get_callback():

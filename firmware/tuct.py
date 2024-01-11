@@ -53,17 +53,15 @@ class Tuct:
         if obj['request'] == 'return_custom_ls':
             return {'custom_ls':self.lightshow.custom_ls}
 
-
         elif obj['request'] == 'set_custom_ls':
             ls_obj = json.loads(obj['lightshow'])
             self.lightshow.set_custom_ls(ls_obj)
             return {'custom_ls_status':'ok'}
 
-        success = self.lightshow.set_custom_ls(obj)
-
-
         elif obj['request'] == 'search':
             return {'tree':'ok'}
+
+        success = self.lightshow.set_custom_ls(obj)
 
         if success:
             status = '201 Created'
@@ -102,7 +100,7 @@ class Tuct:
         self.wifi_connected = True
 
         self.blink_all_leds(1)
-        
+
         print("Starting server")
         self.server = server.HttpServer(self.get_callback2, self.post_callback2)
         new_server = await asyncio.start_server(self.server.socket_handler, '0.0.0.0', 80)
