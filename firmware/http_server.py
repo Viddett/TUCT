@@ -30,7 +30,7 @@ async def start_wifi(timeout_s:int=9):
     
 
     wlan = network.WLAN(network.AP_IF)
-    wlan.config(essid=TREE_WIFI_SSID)
+    wlan.config(essid=TREE_WIFI_SSID,password="12345678")
     wlan.active(True)
 
     wlan.config(pm = 0xa11140)
