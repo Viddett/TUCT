@@ -52,18 +52,28 @@ class Tuct:
 
         if obj['request'] == 'return_custom_ls':
             return {'custom_ls':self.lightshow.custom_ls}
-
-
         elif obj['request'] == 'set_custom_ls':
             ls_obj = json.loads(obj['lightshow'])
             self.lightshow.set_custom_ls(ls_obj)
             return {'custom_ls_status':'ok'}
+        else:
+            return {'status':'bad request'}
+
+
+        print(type(obj))
+        if type(obj['leds'][0][0]) == str:
+            print('Str objects found...')
+            for i in range(len(obj['leds'])):
+                for j in range(len(obj['leds'][i])):
+                    obj['leds'][i][j]= eval(obj['leds'][i][j])
 
         success = self.lightshow.set_custom_ls(obj)
 
-
-        elif obj['request'] == 'search':
-            return {'tree':'ok'}
+        """
+        for ri in range(14):
+            for ci in range(5):
+                LIGHTSHOW['leds'][ri][ci] = obj['leds'][ri][ci]
+        """
 
         if success:
             status = '201 Created'

@@ -1,6 +1,5 @@
 
 import time,network
-import wifi_creds
 import json
 import index
 import re
@@ -23,12 +22,15 @@ OK = '200 OK'
 BAD_REQUEST = '400 Bad request'
 CREATED = '201 Created'
 
+TREE_WIFI_SSID = "TUCT"
 
 
 async def start_wifi(timeout_s:int=9):
 
+    
+
     wlan = network.WLAN(network.AP_IF)
-    wlan.config(essid=wifi_creds.wifi_ssid, password= wifi_creds.wifi_pswd)
+    wlan.config(essid=TREE_WIFI_SSID)
     wlan.active(True)
 
     wlan.config(pm = 0xa11140)
