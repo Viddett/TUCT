@@ -24,7 +24,6 @@ BAD_REQUEST = '400 Bad request'
 CREATED = '201 Created'
 
 
-
 async def start_wifi(timeout_s:int=9):
 
     wlan = network.WLAN(network.AP_IF)
@@ -120,18 +119,19 @@ class HttpServer:
             print("**********" + full_url + "**********")
             if '.svg' in url:
                 content_type = 'image/svg+xml; charset=utf-8'
+                await self.write_response(writer,OK,content_type,full_url,True)
                 # with open(full_url, 'rb') as file:
                 #     contents = file.read()
             elif '.jpg' in url:
                 # Too big to transfer atm...
                 gc.collect()
                 content_type = 'image/jpeg; charset=utf-8'
-            await self.write_response(writer,OK,content_type,full_url,True)
-        # elif '.mp3' in url:
-        #     content_type = 'audio/mpeg'
-        #     with open("web-new" + url, 'rb') as file:
-        #         contents = file.read()
-        #     await self.write_response(writer,OK,content_type,contents,True,True)
+                await self.write_response(writer,OK,content_type,full_url,True)
+            elif '.mp3' in url:
+                content_type = 'audio/mpeg'
+            #     with open("web-new" + url, 'rb') as file:
+            #         contents = file.read()
+                await self.write_response(writer,OK,content_type,full_url,True,True)
         else:
             # Bad request
             await self.write_response(writer,BAD_REQUEST,TEXT_HTML,index.html_bad_request)
@@ -214,7 +214,7 @@ class HttpServer:
         with open(file_path, 'rb') as file:
             done = False
             while not done: # len(content) > 0:
-                content = file.read(4096)
+                content = file.read(16384)
                 if len(content) < 1:
                     content = "\r\n"
                     done = True
