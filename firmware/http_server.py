@@ -51,8 +51,6 @@ class HttpServer:
     def __init__(self, get_state_callback, post_callback):
         self._get_callback = get_state_callback
         self._post_callback = post_callback
-        self._stop_flag = False
-        self.connections = []
 
         with open("web-new/home.html") as file:
             contents = file.readlines()
@@ -61,10 +59,6 @@ class HttpServer:
     async def socket_handler(self,reader:asyncio.StreamReader,writer:asyncio.StreamWriter):
         addr = writer.get_extra_info('peername')
         print(f'Got a connection from {addr}.')
-        self.connections.append(addr)
-
-        while self.connections[0] != addr:
-            await asyncio.sleep_ms(100)
 
         data: bytes = await reader.read(1024)
         request = data.decode('utf-8')
@@ -99,8 +93,6 @@ class HttpServer:
         writer.close()
         await writer.wait_closed()
         print('Connection closed.')
-
-        self.connections.pop(0)
 
     async def _handle_get_2(self,writer:asyncio.StreamWriter,url:str,args,request):
         if url == '/':
@@ -208,31 +200,19 @@ class HttpServer:
             content_length = file_stats[6]
             writer.write(f"Content-Length: {content_length}\n\n")
             await writer.drain()
-            await self.write_binary_file(writer,body,content_length)
+            await self.write_binary_file(writer,body)
 
-    async def write_binary_file(self,writer:asyncio.StreamWriter,file_path:str,content_length:int):
+    async def write_binary_file(self,writer:asyncio.StreamWriter,file_path:str):
         MAX_SIZE = 16384
+        gc.collect()
         with open(file_path, 'rb') as file:
             done = False
             while not done: # len(content) > 0:
-                bytes_to_read = MAX_SIZE
-                # memory_at_disposal = gc.mem_free()
-                # gc.collect()
-                # print(f'Free memory: {memory_at_disposal}, {file_path}')
-                # if memory_at_disposal < MAX_SIZE:
-                #     print(f'Read less than max size!, {file_path}')
-                #     bytes_to_read = memory_at_disposal - 1
-                #     content_length -= bytes_to_read
-                if content_length - MAX_SIZE < 0 :
-                    bytes_to_read = content_length
+                content = file.read(MAX_SIZE)
+                if len(content) < 1:
+                    content = "\r\n"
                     done = True
-                else:
-                    content_length -= MAX_SIZE
-                # print(f'Reading file, {file_path}')
-                content = file.read(bytes_to_read)
-                # print(f'File read: {bytes_to_read}, {file_path}')
                 writer.write(content)
-                # print(f'Writing, {file_path}')
                 await writer.drain()
 
 
