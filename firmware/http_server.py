@@ -52,6 +52,7 @@ class HttpServer:
         self._get_callback = get_state_callback
         self._post_callback = post_callback
         self._stop_flag = False
+        self.connections = []
 
         with open("web-new/home.html") as file:
             contents = file.readlines()
@@ -60,6 +61,10 @@ class HttpServer:
     async def socket_handler(self,reader:asyncio.StreamReader,writer:asyncio.StreamWriter):
         addr = writer.get_extra_info('peername')
         print(f'Got a connection from {addr}.')
+        self.connections.append(addr)
+
+        while self.connections[0] != addr:
+            await asyncio.sleep_ms(100)
 
         data: bytes = await reader.read(1024)
         request = data.decode('utf-8')
@@ -95,6 +100,8 @@ class HttpServer:
         await writer.wait_closed()
         print('Connection closed.')
 
+        self.connections.pop(0)
+
     async def _handle_get_2(self,writer:asyncio.StreamWriter,url:str,args,request):
         if url == '/':
             # Default landing page
@@ -115,23 +122,16 @@ class HttpServer:
                 body = file.read()
             await self.write_response(writer,OK,content_type,body)
         elif 'assets' in url:
-            full_url = url
-            print("**********" + full_url + "**********")
+            extra_content = ''
+            # print("**********" + full_url + "**********")
             if '.svg' in url:
                 content_type = 'image/svg+xml; charset=utf-8'
-                await self.write_response(writer,OK,content_type,full_url,True)
-                # with open(full_url, 'rb') as file:
-                #     contents = file.read()
             elif '.jpg' in url:
-                # Too big to transfer atm...
-                gc.collect()
                 content_type = 'image/jpeg; charset=utf-8'
-                await self.write_response(writer,OK,content_type,full_url,True)
             elif '.mp3' in url:
                 content_type = 'audio/mpeg'
-            #     with open("web-new" + url, 'rb') as file:
-            #         contents = file.read()
-                await self.write_response(writer,OK,content_type,full_url,True,True)
+                extra_content = 'Content-Disposition: filename="NatKingCole-TheHappiestChristmasTree.mp3"'
+            await self.write_response(writer,OK,content_type,url,True,extra_content)
         else:
             # Bad request
             await self.write_response(writer,BAD_REQUEST,TEXT_HTML,index.html_bad_request)
@@ -176,7 +176,7 @@ class HttpServer:
 
         await self.write_response(writer,status,content_type,resp)
 
-    async def write_response(self,writer:asyncio.StreamWriter,code:str,content_type:str='',body:str='',binary=False,disposition=False):
+    async def write_response(self,writer:asyncio.StreamWriter,code:str,content_type:str='',body:str='',binary=False,extra_content=''):
         to_send = [f'HTTP/1.1 {code}']
         header = ["Access-Control-Allow-Origin: *",
                     "Access-Control-Allow-Credentials : true",
@@ -190,8 +190,8 @@ class HttpServer:
         if content_type != '':
             to_send.append(f'Content-Type: {content_type}')
 
-        if disposition:
-            to_send.append(f'Content-Disposition: filename="NatKingCole-TheHappiestChristmasTree.mp3"')
+        if extra_content != '':
+            to_send.append(extra_content)
 
         to_send.append('Connection: close')
 
@@ -208,29 +208,42 @@ class HttpServer:
             content_length = file_stats[6]
             writer.write(f"Content-Length: {content_length}\n\n")
             await writer.drain()
-            await self.write_binary_file(writer,body)
+            await self.write_binary_file(writer,body,content_length)
 
-    async def write_binary_file(self,writer:asyncio.StreamWriter,file_path:str):
+    async def write_binary_file(self,writer:asyncio.StreamWriter,file_path:str,content_length:int):
+        MAX_SIZE = 16384
         with open(file_path, 'rb') as file:
             done = False
             while not done: # len(content) > 0:
-                content = file.read(16384)
-                if len(content) < 1:
-                    content = "\r\n"
+                bytes_to_read = MAX_SIZE
+                # memory_at_disposal = gc.mem_free()
+                # gc.collect()
+                # print(f'Free memory: {memory_at_disposal}, {file_path}')
+                # if memory_at_disposal < MAX_SIZE:
+                #     print(f'Read less than max size!, {file_path}')
+                #     bytes_to_read = memory_at_disposal - 1
+                #     content_length -= bytes_to_read
+                if content_length - MAX_SIZE < 0 :
+                    bytes_to_read = content_length
                     done = True
+                else:
+                    content_length -= MAX_SIZE
+                # print(f'Reading file, {file_path}')
+                content = file.read(bytes_to_read)
+                # print(f'File read: {bytes_to_read}, {file_path}')
                 writer.write(content)
+                # print(f'Writing, {file_path}')
                 await writer.drain()
 
 
 def get_callback():
     print("GET CALLBACK")
-
     return {"kebab_lvl":13337, "svarv_lvlv":10009009420, "rgb":"fett"}
+
 
 def post_callback(args):
     print("POST CALLBACK")
     print(args)
-
     return json.dumps({"status":'glenn'})
 
 glenn = 1
